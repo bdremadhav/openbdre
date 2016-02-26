@@ -176,6 +176,8 @@ public class CreateRawBaseTables extends ETLBase {
             LOGGER.debug("rawTableDdl= " + rawTableDdl);
         }
         if ("mainframe".equalsIgnoreCase(fileType)) {
+            rawTableProperties = tList.substring(0, tList.length() - 1);
+            LOGGER.debug("rawTableProperties = " + rawTableProperties);
             rawTableDdl += "CREATE TABLE IF NOT EXISTS " + rawTableDbName + "." + rawTableName + " ( " + rawColumnsWithDataTypes + " ) " +
                     " partitioned by (batchid bigint)  ROW FORMAT DELIMITED FIELDS TERMINATED BY '1'\n" +
                     "STORED AS INPUTFORMAT 'com.cloudera.sa.copybook.mapred.CopybookInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat' " +

@@ -65,11 +65,26 @@ if [[ ! -f $flumeLibDir/plugins.d/twitter/lib/flume-sources-1.0-SNAPSHOT.jar || 
   cd ../hive-serdes
   mvn package
   sudo cp target/hive-serdes-1.0-SNAPSHOT.jar $BDRE_HOME/lib
-  echo "add jar $BDRE_HOME/lib/hive-serdes-1.0-SNAPSHOT.jar" > ~/.hiverc
+  echo "add jar $BDRE_HOME/lib/hive-serdes-1.0-SNAPSHOT.jar;" > ~/.hiverc
   cd $BDRE_HOME
   rm -r -f cdh-twitter-example
 fi
 
+if [[ ! -f $BDRE_HOME/lib/copybook-0.0.1-SNAPSHOT.jar ]] ; then
+  echo $BDRE_HOME/lib/copybook-0.0.1-SNAPSHOT.jar not installed.
+  git clone https://github.com/CopyBook/CopybookInputFormat.git
+  cd CopybookInputFormat/copybook.inputformat
+  mvn package
+  sudo cp target/copybook-0.0.1-SNAPSHOT.jar $BDRE_HOME/lib
+  sudo cp target/copybookInputFormat.jar $BDRE_HOME/lib
+  echo "add jar $BDRE_HOME/lib/copybook-0.0.1-SNAPSHOT.jar;" >> ~/.hiverc
+  echo "add jar $BDRE_HOME/lib/copybookInputFormat.jar;" >> ~/.hiverc
+  sudo cp target/copybook-0.0.1-SNAPSHOT.jar /usr/lib/hive/lib
+  sudo cp target/copybookInputFormat.jar /usr/lib/hive/lib
+  sudo service hive-server2 restart
+  cd $BDRE_HOME
+  rm -r -f CopybookInputFormat
+fi
 #Create usual hive DBs
 hive -e "create database if not exists raw;create database if not exists base;"
 
