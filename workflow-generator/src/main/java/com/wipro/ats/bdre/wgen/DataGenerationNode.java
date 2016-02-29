@@ -52,6 +52,7 @@ public class DataGenerationNode extends GenericActionNode {
             return "";
         }
 
+        OozieNode fileRegNode = null;
         for (OozieNode oozieNode : actionNode.getContainingNodes()) {
             if (oozieNode instanceof FileRegistrationNode) {
                 fileRegNode = oozieNode;
