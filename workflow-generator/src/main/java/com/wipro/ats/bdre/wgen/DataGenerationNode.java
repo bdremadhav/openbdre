@@ -14,10 +14,7 @@
 
 package com.wipro.ats.bdre.wgen;
 
-import com.wipro.ats.bdre.md.api.GetProperties;
 import com.wipro.ats.bdre.md.beans.ProcessInfo;
-
-import java.util.Enumeration;
 
 /**
  * Created by IshitaParekh on 04-03-2015.
@@ -55,7 +52,6 @@ public class DataGenerationNode extends GenericActionNode {
             return "";
         }
 
-        OozieNode fileRegNode = null;
         for (OozieNode oozieNode : actionNode.getContainingNodes()) {
             if (oozieNode instanceof FileRegistrationNode) {
                 fileRegNode = oozieNode;
