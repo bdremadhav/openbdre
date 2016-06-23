@@ -73,10 +73,7 @@ public class SparkActionNode extends GenericActionNode {
                 "   <java>\n" +
                 "        <job-tracker>${jobTracker}</job-tracker>\n" +
                 "        <name-node>${nameNode}</name-node>\n" +
-                "        <main-class>org.apache.spark.deploy.SparkSubmit</main-class>\n" +
-                "        <arg>--class</arg>\n");
-        ret.append(getAppMainClass(getId(), "spark-main"));
-        ret.append(getConf(getId(), "spark-conf"));
+                "        <main-class>org.apache.spark.deploy.SparkSubmit</main-class>\n" );
         ret.append("        <arg>" + getJarName(getId(), "spark-jar") + "</arg>\n");
         ret.append(getAppArgs(getId(), "app-args"));
         ret.append("        <file>" + getJarName(getId(), "spark-jar") + "</file>\n");
