@@ -297,7 +297,7 @@
                                                     </div>
                                                 </div>
                                                 <hr/>
-                                                <form class="form-horizontal" role="form" ng-if="genConfig.type != 'hql'  && genConfig.type != 'hadoopstream' && genConfig.type != 'r'  && genConfig.type != 'spark' && genConfig.type != 'pig' && genConfig.type != 'shell' && genConfig.type != 'addFiles'">
+                                                <form class="form-horizontal" role="form" ng-if="genConfig.type != 'hql'  && genConfig.type != 'hadoopstream' && genConfig.type != 'r'  && genConfig.type != 'spark' && genConfig.type != 'pyspark' && genConfig.type != 'pig' && genConfig.type != 'shell' && genConfig.type != 'addFiles'">
                                                     <div class="form-group">
                                                         <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey"><spring:message code="wfdesigner.page.propkey_name"/></label>
                                                         <div class="col-sm-10">
@@ -399,6 +399,19 @@
                                                     </div>
                                                     <div class="clearfix"></div>
                                                 </form>
+                                                  <form class="form-horizontal" role="form" ng-if="genConfig.type == 'pyspark'">
+                                                                                                    <div class="form-group form-group-file">
+                                                                                                        <label class="control-label col-sm-3" for="{{genConfig.key}}-propkey"><spring:message code="wfdesigner.page.select_spark_jar"/></label>
+                                                                                                    	<div class="col-sm-10">
+                                                                                                            <input type="file" name="file" class="form-control" id="{{genConfig.key}}-propval" required>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="form-group">
+                                                                                                        <button type="upload" ng-click="uploadFile(chartViewModel.selectedProcess.processId,chartViewModel.selectedProcess.parentProcessId,'pyspark',genConfig.key)" class="btn btn-primary  pull-right">Upload {{genConfig.key}}</button>
+                                                                                                    </div>
+                                                                                                    <div class="clearfix"></div>
+                                                                                                </form>
+
                                             </div>
                                         </div>
                                     </div>

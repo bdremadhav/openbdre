@@ -77,6 +77,7 @@ public class ActionNode extends OozieNode {
 
     public static final int SUPER_WF_ACTION=39;
     public static final int SUB_WF_ACTION=40;
+    public static final int PYSPARK_ACTION = 41;
 
     private ProcessInfo processInfo = new ProcessInfo();
     private List<GenericActionNode> containingNodes = new ArrayList<GenericActionNode>();
@@ -200,7 +201,12 @@ public class ActionNode extends OozieNode {
         } else if (processInfo.getProcessTypeId() == SPARK_ACTION) {
             SparkActionNode sparkActionNode = new SparkActionNode(this);
             containingNodes.add(sparkActionNode);
-        } else if (processInfo.getProcessTypeId() == CRAWLER_PARENT_ACTION) {
+        }
+        else if (processInfo.getProcessTypeId() == PYSPARK_ACTION) {
+            PySparkActionNode pysparkActionNode = new PySparkActionNode(this);
+            containingNodes.add(pysparkActionNode);
+        }
+        else if (processInfo.getProcessTypeId() == CRAWLER_PARENT_ACTION) {
 
         } else if (processInfo.getProcessTypeId() == CRAWLER_CHILD_ACTION) {
             CrawlerActionNode crawlerActionNode = new CrawlerActionNode(this);
