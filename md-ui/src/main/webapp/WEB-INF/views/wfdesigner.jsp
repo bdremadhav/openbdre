@@ -60,47 +60,47 @@
 
                 <style>
                     /* make sidebar nav vertical */
-                    
+
                     .sidebar-nav {
                         min-height: 700px;
                     }
-                    
+
                     .alert {
                         padding: 5px;
                     }
-                    
+
                     .fixed-height {
                         max-height: 750px;
                     }
-                    
+
                     .level2 {
                         opacity: .6;
                         -moz-opacity: 0.6;
                         z-index: 2;
                     }
-                    
+
                     .level2:hover {
                         opacity: 1;
                         -moz-opacity: .99;
                     }
-                    
+
                     .foldablearrow:after {
                         font-family: "Glyphicons Halflings";
                         content: "\e114";
                         float: right;
                         margin-left: 15px;
                     }
-                    
+
                     .foldablearrow.collapsed:after {
                         content: "\e080";
                     }
-                    
+
                     #makescrollable {
                         max-height: 250px;
                         overflow: auto;
                         overflow-x: hidden;
                     }
-                    
+
                     #modalCover {
                         left: 0;
                         top: 0;
@@ -314,7 +314,7 @@
                                                     <button type="submit" ng-click="insertProp(genConfig)" class="btn btn-primary  pull-right"><spring:message code="wfdesigner.page.button_add"/> {{genConfig.value}}</button>
                                                 </form>
                                                 <form class="form-horizontal" role="form" ng-if="genConfig.type == 'hql'">
-                                                    
+
                                                     <div class="form-group form-group-file">
                                                         <label class="control-label col-sm-3" for="{{genConfig.key}}-propkey"><spring:message code="wfdesigner.page.select_hql_file"/></label>
                                                     	<div class="col-sm-10">
