@@ -422,7 +422,12 @@
                                             collapse: "1",
                                             url: "dataimportwizard.page",
                                             children: []
-					},
+					}, {
+                                                                  label: "Export to RDBMS",
+                                                                  collapse: "1",
+                                                                  url: "dataexportwizard.page",
+                                                                  children: []
+                     },
                                         {
                                             label: "Web Crawl and Ingest",
                                             collapse: "1",
