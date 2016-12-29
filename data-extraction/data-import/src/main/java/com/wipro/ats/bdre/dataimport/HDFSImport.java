@@ -14,6 +14,7 @@
 
 package com.wipro.ats.bdre.dataimport;
 
+import com.wipro.ats.bdre.Encryptor;
 import com.cloudera.sqoop.SqoopOptions;
 import com.wipro.ats.bdre.IMConfig;
 import com.wipro.ats.bdre.im.etl.api.exception.ETLException;
@@ -129,7 +130,13 @@ public class HDFSImport extends Configured implements Tool {
             options.setConnManagerClassName("org.apache.sqoop.manager.GenericJdbcManager");
             options.setConnectString(commonProperties.getProperty("db"));
             options.setUsername(commonProperties.getProperty("username"));
-            options.setPassword(commonProperties.getProperty("password"));
+
+            String encriptedPassword = commonProperties.getProperty("password");
+            LOGGER.info("encriptedPassword is "+encriptedPassword);
+            Encryptor encryptor = new Encryptor();
+            String decryptedPassword = encryptor.decrypt("1234512345123451","RandomInitVector",encriptedPassword);
+            options.setPassword(decryptedPassword);
+            LOGGER.info("decryptedPassword "+ decryptedPassword);
 
             int mappers = Integer.parseInt(commonProperties.getProperty("mappers"));
             options.setNumMappers(mappers);

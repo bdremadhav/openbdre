@@ -14,6 +14,7 @@
 
 package com.wipro.ats.bdre.md.rest.ext;
 
+import com.wipro.ats.bdre.Encryptor;
 import com.wipro.ats.bdre.exception.MetadataException;
 import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
 import com.wipro.ats.bdre.md.beans.table.IntermediateInfo;
@@ -88,7 +89,11 @@ public class DataImportAPI extends MetadataAPIBase {
         pushToIntermediate(uuid, "db", dbURL);
         pushToIntermediate(uuid, "driver", driverName);
         pushToIntermediate(uuid, "username", dbUser);
-        pushToIntermediate(uuid, "password", dbPassword);
+        LOGGER.info("user password is "+dbPassword);
+        Encryptor encryptor = new Encryptor();
+        String encryptedPassword = encryptor.encrypt("1234512345123451","RandomInitVector",dbPassword);
+        LOGGER.info("encryptedPassword is "+encryptedPassword);
+        pushToIntermediate(uuid, "password", encryptedPassword);
         pushToIntermediate(uuid, "dbSchema", dbSchema);
         pushToIntermediate(uuid, "busdomainid", busDomainId);
         pushToIntermediate(uuid, "workflowTypeId", workflowTypeId);
