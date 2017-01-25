@@ -332,6 +332,7 @@ function displayProcess(records) {
 		<script>
 var wizard = null;
 var finalJson;
+var listColumnsJson = {"Result":"OK", "Record":[], "Records":[],"TotalRecordCount":0};
 wizard = $(document).ready(function() {
 
 	$("#bdre-data-load").steps({
@@ -357,6 +358,8 @@ wizard = $(document).ready(function() {
 				}).html('<p><span class="jtable-confirm-message"><spring:message code="dataload.page.process_dialog"/></span></p>');
 				return false;
 			}
+
+
 			if(currentIndex == 3 && newIndex == 4 ) {
 				testNullValues('formatFields');
                 				console.log('source flag is ' + sourceFlag);
@@ -396,10 +399,73 @@ wizard = $(document).ready(function() {
 			console.log(document.getElementById('fileFormat').elements[1].value);
 			    buildForm(document.getElementById('fileFormat').elements[1].value);
 			}
+
+
 			return true;
 		},
 		onStepChanged: function(event, currentIndex, priorIndex) {
 			console.log(currentIndex + " " + priorIndex);
+
+	        if(currentIndex == 1 && priorIndex == 0){
+                $("#fileformat").change(function () {
+                    if(document.getElementById('fileFormat').elements[1].value == 'delimited'){
+                        $("#fileDelimiterDiv").show();
+                        $("#samplefileDiv").show();
+
+                    }
+                    else{
+                        $("#fileDelimiterDiv").hide();
+                        $("#samplefileDiv").hide();
+                    }
+
+                });
+            }
+
+			if(document.getElementById('fileFormat').elements[1].value=='delimited' && currentIndex == 2 && priorIndex == 1){
+			var samplefilename = document.getElementById('samplefile').value.replace(/.*[\/\\]/, '');
+
+			<!-- var path = document.getElementById('filePath').value.replace(/[/]/g,'_'); -->
+			var path = "samplefile_"+samplefilename;
+			console.log(path);
+			    $.ajax({
+                    type: "POST",
+                    url: "/mdrest/dataload/getschema/"+path+"/"+document.getElementById('fileDelimiter').value,
+                     success: function (data) {
+                        var tempJson = data;
+                        console.log(tempJson);
+                        var tempJson2 = {"Result":"OK", "Record":[], "Records":[],"TotalRecordCount":0};
+                         tempJson2.Record = jQuery.parseJSON(tempJson.Record);
+                         tempJson2.Records = jQuery.parseJSON(tempJson.Records);
+                        console.log(tempJson2);
+                        listColumnsJson.Record = tempJson2.Record.Record;
+                        listColumnsJson.Records = tempJson2.Records.Records;
+
+                        console.log(listColumnsJson) ;
+
+                        $('#rawTableColumnDetails').jtable('load',listColumnsJson);
+
+                    },
+                    error: function () {
+                        alert('danger');
+                    }
+
+                });
+
+			}
+
+			if(document.getElementById('fileFormat').elements[1].value=='delimited' && currentIndex == 3 && priorIndex == 2) {
+			    $("#bdre-data-load").steps("next");
+			}
+
+
+			if(document.getElementById('fileFormat').elements[1].value=='delimited' && currentIndex == 4 && priorIndex == 3) {
+			    $("#bdre-data-load").steps("next");
+			}
+
+			if(document.getElementById('fileFormat').elements[1].value=='delimited' && currentIndex == 5 && priorIndex == 4) {
+                    $("#bdre-data-load").steps("next");
+                }
+
 			if(currentIndex == 8 && priorIndex == 7) {
 				{
 
@@ -748,6 +814,21 @@ wizard = $(document).ready(function() {
                                                 </select>
                                             </div>
                                         </div>
+
+                                            <div id="fileDelimiterDiv" name="fileDelimiterDiv" class="form-group" >
+                                                <label class="control-label col-sm-2" for="fileDelimiter">Delimiter</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" class="form-control"  id="fileDelimiter" name="fileDelimiter" value="" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" id="samplefileDiv" name="samplefileDiv" >
+                                                <input type="file" name="samplefile" class="form-control" id="samplefile" required>
+                                                <div ><br /></div >
+                                                 <button type="button" class="btn btn-sm btn-primary pull-left" onClick="uploadFile('samplefile','samplefile')">Upload Sample File</button>
+                                                </div >
+                                                <div>
+
                                         <div class="clearfix"></div>
                                         </div>
 
@@ -774,14 +855,8 @@ wizard = $(document).ready(function() {
                 <b><spring:message code="dataload.page.enter_props"/></b>
                 <br>
             </div>
-            <div class = "list-group" >
-                <span href = "#" class = "list-group-item" >
-                    <span class = "glyphicon glyphicon-export" ></span >For csv delimiter file, key is &quot;field.delim&quot; and value is &quot;,&quot;
-                </span >
-             </div>
+
     <form class="form-horizontal pull-none" role="form" id="serdeProperties">
-
-
 
                                             <!-- btn-group -->
                                             <div class="form-group" id="formGroupSerde1">
@@ -888,138 +963,71 @@ wizard = $(document).ready(function() {
 
 		<script type="text/javascript">
 	$(document).ready(function () {
-	$('#rawTableColumnDetails').jtable({
-		title: '<spring:message code="dataload.page.title_raw_table"/>',
-		paging: false,
-		sorting: false,
-		create: false,
-		edit: false,
-		actions: {
-			listAction: function(postData, jtParams) {
-				return jsonObj;
-			},
-			createAction: function(postData) {
-                console.log(postData);
-                var serialnumber = 1;
-                var rawSplitedPostData = postData.split("&");
-                var rawJSONedPostData = '{';
-                rawJSONedPostData += '"serialNumber":"';
-                rawJSONedPostData += serialnumber;
-                serialnumber += 1;
-                rawJSONedPostData += '"';
-                rawJSONedPostData += ',';
-                for (i=0; i < rawSplitedPostData.length ; i++)
-                {
-                    console.log("data is " + rawSplitedPostData[i]);
-                    rawJSONedPostData += '"';
-                    rawJSONedPostData += rawSplitedPostData[i].split("=")[0];
-                    rawJSONedPostData += '"';
-                    rawJSONedPostData += ":";
-                    rawJSONedPostData += '"';
-                    rawJSONedPostData += rawSplitedPostData[i].split("=")[1];
-                    rawJSONedPostData += '"';
-                    rawJSONedPostData += ',';
-                    console.log("json is" + rawJSONedPostData);
-                }
-                var rawLastIndex = rawJSONedPostData.lastIndexOf(",");
-                rawJSONedPostData = rawJSONedPostData.substring(0,rawLastIndex);
-                rawJSONedPostData +=  "}";
-                console.log(rawJSONedPostData);
 
-
-               var rawReturnObj='{"Result":"OK","Record":' + rawJSONedPostData + '}';
-               var rawJSONedReturn = $.parseJSON(rawReturnObj);
-
-               return $.Deferred(function($dfd) {
-                                console.log(rawJSONedReturn);
-                                $dfd.resolve(rawJSONedReturn);
-                            });
-
-				},
-
-			updateAction: function(postData) {
-
-				return $.Deferred(function($dfd) {
-					console.log(postData);
-					$dfd.resolve(jsonObj);
-				});
-			},
-			deleteAction: function(item) {
-				console.log(item.key);
-				return $.Deferred(function($dfd) {
-					$dfd.resolve(jsonObj);
-				});
-			}
-
-		},
-		fields: {
-		    serialNumber:{
-		        key : true,
-		        list:false,
-		        create : false,
-		        edit:false
-		    },
-
-			columnName: {
-				title: '<spring:message code="dataload.page.title_col_name"/>',
-				width: '50%',
-				edit: true,
-				create:true
-			},
-			dataType: {
-
-				create: true,
-				title: 'Data Type',
-				edit: true,
-				options:{ 'BigInt':'BigInt',
-                          'SmallInt':'SmallInt',
-                          'Float':'Float',
-                          'Double':'Double',
-                          'Decimal':'Decimal',
-                          'Timestamp':'Timestamp',
-                          'Date':'Date',
-                          'String':'String'}
-			}
-		},
-
-        recordAdded: function(event, data){
-                //after record insertion, reload the records
-                console.log("inserting data into base table "+ {record: JSON.stringify(data.record) });
-
-                $('#baseTableColumnDetails').jtable('addRecord', {
-                record: data.record
-                });
-        },
-        recordUpdated: function(event, data){
-                //after record insertion, reload the records
-                console.log("updating data into base table "+ {record: JSON.stringify(data.record) });
-
-                $('#baseTableColumnDetails').jtable('updateRecord', {
-                record: data.record,
-                clientOnly:true
-                });
-        },
-        recordDeleted: function(event, data){
-                //after record insertion, reload the records
-                console.log("inserting data into base table "+ {record: JSON.stringify(data.record) });
-
-                $('#baseTableColumnDetails').jtable('deleteRecord', {
-                    key: data.record.serialNumber,
-                    clientOnly:true
-                });
-        }
-
-	});
-
-
-
-	$('#rawTableColumnDetails').jtable('load');
 
 });
 
 		</script>
-<script type="text/javascript">
 
+
+  <script>
+    var uploadedFileName ="";
+  function uploadFile (subDir,fileId){
+ var arg= [subDir,fileId];
+   var fd = new FormData();
+        var fileObj = $("#"+arg[1])[0].files[0];
+          var fileName=fileObj.name;
+          fd.append("file", fileObj);
+          fd.append("name", fileName);
+          $.ajax({
+            url: '/mdrest/filehandler/uploadzip/'+arg[0],
+            type: "POST",
+            data: fd,
+            async: false,
+            enctype: 'multipart/form-data',
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success:function (data) {
+                  uploadedFileName=data.Record.fileName;
+                  console.log( data );
+                  $("#div-dialog-warning").dialog({
+                                  title: "",
+                                  resizable: false,
+                                  height: 'auto',
+                                  modal: true,
+                                  buttons: {
+                                      "Ok" : function () {
+                                          $(this).dialog("close");
+                                      }
+                                  }
+                  }).html('<p><span class="jtable-confirm-message"><spring:message code="processimportwizard.page.upload_success"/>'+' ' + uploadedFileName + '</span></p>');
+                  return false;
+            },
+          error: function () {
+                $("#div-dialog-warning").dialog({
+                              title: "",
+                              resizable: false,
+                              height: 'auto',
+                              modal: true,
+                              buttons: {
+                                  "Ok" : function () {
+                                      $(this).dialog("close");
+                                  }
+                              }
+              }).html('<p><span class="jtable-confirm-message"><spring:message code="processimportwizard.page.upload_error"/></span></p>');
+              return false;
+            }
+         });
+
+  }
+
+
+
+  </script>
+
+
+
+<script type="text/javascript">
 
 	 $(document).ready(function () {
         	    $('#baseTableColumnDetails').jtable({
@@ -1030,7 +1038,7 @@ wizard = $(document).ready(function() {
                     edit: false,
         		    actions: {
                         listAction: function (postData, jtParams) {
-                            return jsonObj;
+                            return listColumnsJson;
                         },
 
                         createAction:function (postData, jtParams) {
@@ -1156,7 +1164,149 @@ wizard = $(document).ready(function() {
 
         	</script>
 
+<script type="text/javascript">
+        $(document).ready(function () {
 
+		    $('#rawTableColumnDetails').jtable({
+                    title: '<spring:message code="dataload.page.title_raw_table"/>',
+                    paging: false,
+                    sorting: false,
+                    create: false,
+                    edit: false,
+                    actions: {
+                        listAction: function(postData, jtParams) {
+                            console.log(listColumnsJson);
+                             return listColumnsJson;
+                        },
+                        createAction: function(postData) {
+                            console.log(postData);
+                            var serialnumber = 1;
+                            var rawSplitedPostData = postData.split("&");
+                            var rawJSONedPostData = '{';
+                            rawJSONedPostData += '"serialNumber":"';
+                            rawJSONedPostData += serialnumber;
+                            serialnumber += 1;
+                            rawJSONedPostData += '"';
+                            rawJSONedPostData += ',';
+                            for (i=0; i < rawSplitedPostData.length ; i++)
+                            {
+                                console.log("data is " + rawSplitedPostData[i]);
+                                rawJSONedPostData += '"';
+                                rawJSONedPostData += rawSplitedPostData[i].split("=")[0];
+                                rawJSONedPostData += '"';
+                                rawJSONedPostData += ":";
+                                rawJSONedPostData += '"';
+                                rawJSONedPostData += rawSplitedPostData[i].split("=")[1];
+                                rawJSONedPostData += '"';
+                                rawJSONedPostData += ',';
+                                console.log("json is" + rawJSONedPostData);
+                            }
+                            var rawLastIndex = rawJSONedPostData.lastIndexOf(",");
+                            rawJSONedPostData = rawJSONedPostData.substring(0,rawLastIndex);
+                            rawJSONedPostData +=  "}";
+                            console.log(rawJSONedPostData);
+
+
+                           var rawReturnObj='{"Result":"OK","Record":' + rawJSONedPostData + '}';
+                           var rawJSONedReturn = $.parseJSON(rawReturnObj);
+
+                           return $.Deferred(function($dfd) {
+                                            console.log(rawJSONedReturn);
+                                            $dfd.resolve(rawJSONedReturn);
+                                        });
+
+                            },
+
+                        updateAction: function(postData) {
+
+                            return $.Deferred(function($dfd) {
+                                console.log(postData);
+                                $dfd.resolve(jsonObj);
+                            });
+                        },
+                        deleteAction: function(item) {
+                            console.log(item.key);
+                            return $.Deferred(function($dfd) {
+                                $dfd.resolve(jsonObj);
+                            });
+                        }
+
+                    },
+                    fields: {
+                        serialNumber:{
+                            key : true,
+                            list:false,
+                            create : false,
+                            edit:false
+                        },
+
+                        columnName: {
+                            title: '<spring:message code="dataload.page.title_col_name"/>',
+                            width: '50%',
+                            edit: true,
+                            create:true
+                        },
+                        dataType: {
+
+                            create: true,
+                            title: 'Data Type',
+                            edit: true,
+                            options:{ 'BigInt':'BigInt',
+                                      'SmallInt':'SmallInt',
+                                      'Float':'Float',
+                                      'Double':'Double',
+                                      'Decimal':'Decimal',
+                                      'Timestamp':'Timestamp',
+                                      'Date':'Date',
+                                      'String':'String'}
+                        }
+                    },
+
+
+
+                     recordsLoaded: function(event, data){
+                            //after record loading, reload the records
+                            console.log("loading data into base table ", {records: JSON.stringify(data.records) });
+
+                            $('#baseTableColumnDetails').jtable('load',listColumnsJson);
+                    },
+
+                    recordAdded: function(event, data){
+                            //after record insertion, reload the records
+                            console.log("inserting data into base table "+ {record: JSON.stringify(data.record) });
+
+                            $('#baseTableColumnDetails').jtable('addRecord', {
+                            record: data.record
+                            });
+                    },
+                    recordUpdated: function(event, data){
+                            //after record insertion, reload the records
+                            console.log("updating data into base table "+ {record: JSON.stringify(data.record) });
+
+                            $('#baseTableColumnDetails').jtable('updateRecord', {
+                            record: data.record,
+                            clientOnly:true
+                            });
+                    },
+                    recordDeleted: function(event, data){
+                            //after record insertion, reload the records
+                            console.log("inserting data into base table "+ {record: JSON.stringify(data.record) });
+
+                            $('#baseTableColumnDetails').jtable('deleteRecord', {
+                                key: data.record.serialNumber,
+                                clientOnly:true
+                            });
+                    }
+
+                });
+
+
+
+                $('#rawTableColumnDetails').jtable('load');
+
+		});
+
+     </script>
 
 		<script>
 function buildForm(fileformat) {

@@ -14,6 +14,8 @@
 
 package com.wipro.ats.bdre.md.rest.ext;
 
+
+import com.wipro.ats.bdre.MDConfig;
 import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
 import com.wipro.ats.bdre.md.dao.ProcessDAO;
 import com.wipro.ats.bdre.md.dao.UserRolesDAO;
@@ -24,10 +26,18 @@ import com.wipro.ats.bdre.md.rest.RestWrapper;
 import com.wipro.ats.bdre.md.rest.util.Dao2TableUtil;
 import com.wipro.ats.bdre.md.rest.util.DateConverter;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.*;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -95,6 +105,86 @@ public class DataLoadAPI extends MetadataAPIBase {
         return restWrapper;
     }
 
+
+    @RequestMapping(value = "/getschema/{filepath}/{delimiter}", method = {RequestMethod.POST})
+    @ResponseBody
+    public RestWrapper getTablesList(@PathVariable("filepath") String filepath, @PathVariable("delimiter") String delimiter) {
+        RestWrapper restWrapper = null;
+
+        String uploadDirectory = MDConfig.getProperty("upload.base-directory");
+
+        String file = uploadDirectory+"/"+filepath.replace('_','/');
+        LOGGER.info("file name"+file);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String columnLine = br.readLine();
+            LOGGER.info("columnLine = " + columnLine);
+            String[] columnArray = columnLine.split(delimiter);
+
+            String dataLine = br.readLine();
+            LOGGER.info("dataTypeLine = " + dataLine);
+            String[] dataArray = dataLine.split(delimiter);
+            String[] dataTypes = new String[dataArray.length];
+
+            for(int i=0; i<dataArray.length; i++){
+                String data = dataArray[i];
+                try {
+                    Integer.parseInt(data);
+                    dataTypes[i] = "BigInt";
+                }catch (NumberFormatException nfe){
+
+                    try{
+                        DateFormat sdf  =  new SimpleDateFormat("yyyy-MM-dd");
+                        sdf.setLenient(false);
+                        sdf.parse(data);
+                        dataTypes[i] = "Date";
+                    }catch (ParseException pe){
+                        dataTypes[i] = "String";
+                    }
+                }
+            }
+
+
+            JSONObject jsonObject = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            try {
+                for(int i=0; i<columnArray.length; i++){
+                    JSONObject recordJsonObject = new JSONObject();
+                    recordJsonObject.put("Result", "OK");
+                    recordJsonObject.put("columnName",columnArray[i]);
+                    recordJsonObject.put("dataType",dataTypes[i]);
+                    recordJsonObject.put("serialNumber","1");
+                    recordJsonObject.put("transformations",columnArray[i]);
+                    jsonArray.put(recordJsonObject);
+                }
+
+                jsonObject.put("Result","OK");
+                jsonObject.put("Records",jsonArray);
+                jsonObject.put("Record",jsonArray);
+                jsonObject.put("TotalRecordCount",columnArray.length);
+                restWrapper = new RestWrapper(jsonObject.toString(), RestWrapper.OK);
+
+            }catch (JSONException je){
+                LOGGER.info("je = " + je);
+            }catch (Exception e){
+                LOGGER.info(e);
+            }
+
+
+        }
+        catch (FileNotFoundException e){
+            LOGGER.info("File Not Found at "+filepath);
+            LOGGER.info("e = " + e);
+        }
+        catch (IOException e){
+            LOGGER.info("Unable to read first two lines of file");
+            LOGGER.info("e = " + e);
+        }
+
+
+        return restWrapper;
+    }
+
     @RequestMapping(value = {"/createjobs"}, method = RequestMethod.POST)
 
     @ResponseBody public
@@ -134,7 +224,12 @@ public class DataLoadAPI extends MetadataAPIBase {
                 if("fileformat".equals(string.replaceAll(FILEFORMAT, ""))){
                     jpaProperties = Dao2TableUtil.buildJPAProperties(RAWTABLE, "file_type", map.get(string), "file type");
                     file2RawProperties.add(jpaProperties);
-                }else if("rawDBName".equals(string.replaceAll(FILEFORMAT, ""))){
+                }else if("fileDelimiter".equals(string.replaceAll(FILEFORMAT, ""))){
+                    jpaProperties = Dao2TableUtil.buildJPAProperties("raw-serde-props", "field.delim", map.get(string), "file delimiter");
+                    file2RawProperties.add(jpaProperties);
+                }
+
+                else if("rawDBName".equals(string.replaceAll(FILEFORMAT, ""))){
                     jpaProperties = Dao2TableUtil.buildJPAProperties(RAWTABLE, "table_db", map.get(string), "RAW DB Name");
                     file2RawProperties.add(jpaProperties);
                     jpaProperties = Dao2TableUtil.buildJPAProperties(RAWTABLE, "table_db_raw", map.get(string), "RAW DB Name");
@@ -287,7 +382,58 @@ public class DataLoadAPI extends MetadataAPIBase {
     }
 
 
+    public List<String[]> getSchema(String filepath, String delimiter) {
 
+        File file= new File(filepath);
+        List<String[]> stringArrayList = new ArrayList<String[]>() ;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String columnLine = br.readLine();
+            System.out.println("columnLine = " + columnLine);
+            String[] columnArray = columnLine.split(delimiter);
+
+            String dataLine = br.readLine();
+            System.out.println("dataTypeLine = " + dataLine);
+            String[] dataArray = dataLine.split(delimiter);
+            String[] dataTypes = new String[dataArray.length];
+
+            for(int i=0; i<dataArray.length; i++){
+                String data = dataArray[i];
+                try {
+                    Integer.parseInt(data);
+                    dataTypes[i] = "BigInt";
+                    System.out.println(" integer " );
+                }catch (NumberFormatException nfe){
+
+                    try{
+                        DateFormat sdf  =  new SimpleDateFormat("yyyy-MM-dd");
+                        sdf.setLenient(false);
+                        sdf.parse(data);
+                        dataTypes[i] = "Date";
+                        System.out.println(" date" );
+                    }catch (ParseException pe){
+                        dataTypes[i] = "String";
+                        System.out.println(" string" );
+                    }
+                }
+            }
+
+            stringArrayList.add(0,columnArray);
+            stringArrayList.add(1,dataTypes);
+
+
+        }
+        catch (FileNotFoundException e){
+            System.out.println("File Not Found at "+filepath);
+            System.out.println("e = " + e);
+        }
+        catch (IOException e){
+            System.out.println("IO exception");
+            System.out.println("e = " + e);
+        }
+
+        return stringArrayList;
+    }
 
 
 
