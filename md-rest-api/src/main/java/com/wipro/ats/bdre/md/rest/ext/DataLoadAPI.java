@@ -116,7 +116,6 @@ public class DataLoadAPI extends MetadataAPIBase {
         List<com.wipro.ats.bdre.md.dao.jpa.Properties> raw2StageProperties=new ArrayList<Properties>();
         List<com.wipro.ats.bdre.md.dao.jpa.Properties> stage2BaseProperties=new ArrayList<Properties>();
         Map<Process,List<Properties>> processPropertiesMap = new HashMap<Process, List<Properties>>();
-        int rawColumnCounter = 1;
 
         com.wipro.ats.bdre.md.dao.jpa.Properties jpaProperties=null;
         for (String string : map.keySet()) {
@@ -125,10 +124,14 @@ public class DataLoadAPI extends MetadataAPIBase {
                 continue;
             }
             if (string.startsWith("rawtablecolumn_")) {
+                String[] dataTypeAndCounter = map.get(string).split("_");
+                String dataType= dataTypeAndCounter[0];
+                String rawColumnCounter = dataTypeAndCounter[1];
+
                 jpaProperties = Dao2TableUtil.buildJPAProperties("raw-cols", "raw_column_name." + rawColumnCounter, string.replaceAll("rawtablecolumn_", ""), "Column name for raw table");
                 file2RawProperties.add(jpaProperties);
-                jpaProperties = Dao2TableUtil.buildJPAProperties("raw-data-types", "raw_column_datatype." + rawColumnCounter, map.get(string), "Data Type for raw table");
-                rawColumnCounter++;
+                jpaProperties = Dao2TableUtil.buildJPAProperties("raw-data-types", "raw_column_datatype." + rawColumnCounter, dataType, "Data Type for raw table");
+                //rawColumnCounter++;
                 file2RawProperties.add(jpaProperties);
             }else if (string.startsWith(FILEFORMAT)) {
                 if("fileformat".equals(string.replaceAll(FILEFORMAT, ""))){

@@ -1241,12 +1241,13 @@ function jtableIntoMap(typeProp, typeDiv) {
 		$(this).addClass('ui-state-highlight');
 	});
 
+    var indexcount = 1;
 	var $selectedRows = $(div).jtable('selectedRows');
 	$selectedRows.each(function() {
 		var record = $(this).data('record');
 		var keys = typeProp + record.columnName;
 		console.log(keys);
-		map[keys] = record.dataType;
+		map[keys] = record.dataType+"_"+(indexcount++);
 		console.log(map);
 	});
 	$('.jtable-row-selected').removeClass('jtable-row-selected');
