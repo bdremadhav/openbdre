@@ -387,6 +387,25 @@ public class HistoryDataImportDAO {
                 columnListProperties.setDescription(DATAIMPORTPROPERTIES);
                 session.save(columnListProperties);
 
+
+                //column list with datatypes
+                IntermediateId intermediateIdColumnWithDatatypes = new IntermediateId();
+                intermediateIdColumnWithDatatypes.setUuid(intermediateInfo.getUuid());
+                intermediateIdColumnWithDatatypes.setInterKey("rawColumnsAndDataTypes_" + i);
+
+                Criteria columnListWithDatatypesValueCriteria = session.createCriteria(Intermediate.class).add(Restrictions.eq("id", intermediateIdColumnWithDatatypes));
+                Intermediate columnListWithDatatypesValue = (Intermediate) columnListWithDatatypesValueCriteria.list().get(0);
+
+                PropertiesId propertiesIdColumnWithDatatypesList = new PropertiesId();
+                propertiesIdColumnWithDatatypesList.setProcessId(childDataImportProcess.getProcessId());
+                propertiesIdColumnWithDatatypesList.setPropKey("columns-with-datatypes");
+                Properties columnListWithDatatypesProperties = new Properties();
+                columnListWithDatatypesProperties.setId(propertiesIdColumnWithDatatypesList);
+                columnListWithDatatypesProperties.setConfigGroup(IMPCOMMON);
+                columnListWithDatatypesProperties.setPropValue(columnListWithDatatypesValue.getInterValue());
+                columnListWithDatatypesProperties.setDescription(DATAIMPORTPROPERTIES);
+                session.save(columnListWithDatatypesProperties);
+
                 // increment type
                 IntermediateId intermediateIdIncrementType = new IntermediateId();
                 intermediateIdIncrementType.setUuid(intermediateInfo.getUuid());
