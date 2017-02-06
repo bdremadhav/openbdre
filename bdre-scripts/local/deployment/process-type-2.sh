@@ -92,6 +92,11 @@ then exit 1
 fi
 fi
 
+cp $BDRE_HOME/bdre-scripts/hql/hive-executor.sh $BDRE_APPS_HOME/$busDomainId/$processTypeId/$processId
+if [ $? -eq 1 ]
+then exit 1
+fi
+
 
 #copying data-lineage jar
 cp $BDRE_HOME/lib/hive-plugin/hive-plugin-$bdreVersion-executable.jar $BDRE_APPS_HOME/$busDomainId/$processTypeId/$processId/lib

@@ -29,20 +29,20 @@ public class WorkflowPrinterTest {
     private static List<ProcessInfo> getProcessBeans1() {
         //Unit test with test data
         List<ProcessInfo> processInfos = new ArrayList<ProcessInfo>();
-        ProcessInfo parent = new ProcessInfo(1, "sample parent", "Semantic Process", 1, 2, 0, false, 0, "2");
-        ProcessInfo sub1 = new ProcessInfo(2, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "3");
-        ProcessInfo sub2 = new ProcessInfo(3, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "4");
-        ProcessInfo sub3 = new ProcessInfo(4, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "5");
-        ProcessInfo sub4 = new ProcessInfo(5, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "6");
-        ProcessInfo sub5 = new ProcessInfo(6, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "7");
-        ProcessInfo sub6 = new ProcessInfo(7, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "1");
+        ProcessInfo parent = new ProcessInfo(84, "sample parent", "Semantic Process", 1, 2, 0, false, 0, "85");
+        ProcessInfo sub1 = new ProcessInfo(85, "sample sub", "Semantic Process", 1, 9, 84, false, 0, "84");
+       // ProcessInfo sub2 = new ProcessInfo(3, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "4");
+       // ProcessInfo sub3 = new ProcessInfo(4, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "5");
+       // ProcessInfo sub4 = new ProcessInfo(5, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "6");
+       // ProcessInfo sub5 = new ProcessInfo(6, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "7");
+       // ProcessInfo sub6 = new ProcessInfo(7, "sample sub", "Semantic Process", 1, 9, 1, false, 0, "1");
         processInfos.add(parent);
         processInfos.add(sub1);
-        processInfos.add(sub2);
-        processInfos.add(sub3);
-        processInfos.add(sub4);
-        processInfos.add(sub5);
-        processInfos.add(sub6);
+        //processInfos.add(sub2);
+       // processInfos.add(sub3);
+       // processInfos.add(sub4);
+       // processInfos.add(sub5);
+       // processInfos.add(sub6);
         return processInfos;
     }
 
@@ -67,7 +67,7 @@ public class WorkflowPrinterTest {
     }
 
     @Test
-    @Ignore
+
     public void testExecute1() throws Exception {
         List<ProcessInfo> processInfos = getProcessBeans1();
         String workflowXML = new WorkflowPrinter().execute(processInfos, "test-workflow").getXml().toString();

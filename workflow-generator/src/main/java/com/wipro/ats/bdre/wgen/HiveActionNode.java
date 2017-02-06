@@ -69,58 +69,48 @@ public class HiveActionNode extends GenericActionNode {
             return "";
         }
         StringBuilder ret = new StringBuilder();
-        ret.append("\n<action name=\"" + getName());
-        if (isSecurityEnabled(this.getProcessInfo().getParentProcessId(), "security") != 0) {
-            ret.append(" cred='hive_credentials'");
-        }
 
-        ret.append("\">\n" +
-                "        <hive xmlns=\"uri:oozie:hive-action:0.2\">\n" +
+
+        ret.append("\n<action name=\"" + getName() + "\">\n" +
+                "        <shell xmlns=\"uri:oozie:shell-action:0.1\">\n" +
                 "            <job-tracker>${jobTracker}</job-tracker>\n" +
-                "            <name-node>${nameNode}</name-node>\n" +
+                "            <name-node>${nameNode}</name-node>\n"+
 
-                "            <job-xml>hive-site.xml</job-xml>\n" +
-                "            <configuration>\n" +
+                "          <configuration>\n" +
                 "            <property>\n" +
                 "                <name>run_id</name>\n" +
                 "                <value>${wf:actionData(\"init-job\")[\"min-batch-id-map." + getId() + "\"]}</value>\n" +
                 "            </property>\n" +
 
-                "            <property>\n" +
-                "                <name>hive.exec.post.hooks</name>\n" +
-                "                <value>com.wipro.ats.bdre.hiveplugin.hook.LineageHook</value>\n" +
-                "                </property>" +
-                "                <property>\n" +
-                "                <name>bdre.lineage.processId</name>\n" +
-                "                <value>" + getId() + "</value>\n" +
-                "                </property>\n" +
-                "                <property>\n" +
-                "                <name>bdre.lineage.instanceExecId</name>\n" +
-                "                <value>${wf:actionData(\"init-job\")[\"instance-exec-id\"]}</value>\n" +
-                "                </property>\n" +
 
-                "                </configuration>");
-        ret.append(getQueryPath(getId(), "query"));
+                "         </configuration>\n"+
 
 
-        ret.append("            <param>exec-id=${wf:actionData(\"init-job\")[\"instance-exec-id\"]}</param>\n" +
-                "            <param>target-batch-id=${wf:actionData(\"init-job\")[\"target-batch-id\"]}</param>\n" +
-                "            <param>min-batch-id=${wf:actionData(\"init-job\")[\"min-batch-id-map." + getId() + "\"]}</param>\n" +
-                "            <param>max-batch-id=${wf:actionData(\"init-job\")[\"max-batch-id-map." + getId() + "\"]}</param>\n" +
-                "            <param>min-pri=${wf:actionData(\"init-job\")[\"min-source-instance-exec-id-map." + getId() + "\"]}</param>\n" +
-                "            <param>max-pri=${wf:actionData(\"init-job\")[\"max-source-instance-exec-id-map." + getId() + "\"]}</param>\n" +
-                "            <param>min-batch-marking=${wf:actionData(\"init-job\")[\"min-batch-marking-map." + getId() + "\"]}</param>\n" +
-                "            <param>max-batch-marking=${wf:actionData(\"init-job\")[\"max-batch-marking-map." + getId() + "\"]}</param>\n" +
-                "            <param>target-batch-marking=${wf:actionData(\"init-job\")[\"target-batch-marking\"]}</param>\n" +
-                "            <param>last-recoverable-sp-id=${wf:actionData(\"init-job\")[\"last-recoverable-sp-id\"]}</param>\n");
-
-
+                "            <exec>hive-executor.sh</exec>\n"+
+                "            <argument>"+ getQueryPath(getId(), "query").replace("hql/","") +"</argument>\n"+
+                "            <argument>exec-id=${wf:actionData(\"init-job\")[\"instance-exec-id\"]}</argument>\n" +
+                "            <argument>target-batch-id=${wf:actionData(\"init-job\")[\"target-batch-id\"]}</argument>\n" +
+                "            <argument>min-batch-id=${wf:actionData(\"init-job\")[\"min-batch-id-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>max-batch-id=${wf:actionData(\"init-job\")[\"max-batch-id-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>min-pri=${wf:actionData(\"init-job\")[\"min-source-instance-exec-id-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>max-pri=${wf:actionData(\"init-job\")[\"max-source-instance-exec-id-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>min-batch-marking=${wf:actionData(\"init-job\")[\"min-batch-marking-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>max-batch-marking=${wf:actionData(\"init-job\")[\"max-batch-marking-map." + getId() + "\"]}</argument>\n" +
+                "            <argument>target-batch-marking=${wf:actionData(\"init-job\")[\"target-batch-marking\"]}</argument>\n" +
+                "            <argument>last-recoverable-sp-id=${wf:actionData(\"init-job\")[\"last-recoverable-sp-id\"]}</argument>\n");
         ret.append(getParams(getId(), "param"));
-
-        ret.append("        </hive>\n" +
+        ret.append("            <file>"+ getQueryPath(getId(), "query")+"</file>\n"+
+                "            <file>hive-executor.sh</file>\n"+
+                "            <file>env.sh</file>\n"+
+                "        </shell>\n" +
                 "        <ok to=\"" + getToNode().getName() + "\"/>\n" +
                 "        <error to=\"" + getTermNode().getName() + "\"/>\n" +
                 "    </action>");
+
+
+
+
+
 
         return ret.toString();
     }
@@ -140,11 +130,11 @@ public class HiveActionNode extends GenericActionNode {
         if (!queryPath.isEmpty()) {
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
-                addQueryPath.append("            <script>" + queryPath.getProperty(key) + "</script>\n");
+                addQueryPath.append(queryPath.getProperty(key));
 
             }
         } else {
-            addQueryPath.append("            <script>hql/query" + getId() + ".hql</script>\n");
+            addQueryPath.append("hql/query" + getId() + ".hql");
         }
         return addQueryPath.toString();
     }
@@ -161,10 +151,17 @@ public class HiveActionNode extends GenericActionNode {
         java.util.Properties listForParams = getProperties.getProperties(getId().toString(), configGroup);
         Enumeration e = listForParams.propertyNames();
         StringBuilder addParams = new StringBuilder();
+        int noOfParams = 0;
+        if (!listForParams.isEmpty()) {
+            while (e.hasMoreElements()) {
+                noOfParams++;
+            }
+        }
+        addParams.append("            <argument>"+ noOfParams +"</argument>\n");
         if (!listForParams.isEmpty()) {
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
-                addParams.append("            <param>" + key + "=" + listForParams.getProperty(key) + "</param>\n");
+                addParams.append("            <argument>" + key + "=" + listForParams.getProperty(key) + "</argument>\n");
             }
         }
         return addParams.toString();
