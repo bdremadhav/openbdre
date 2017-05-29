@@ -75,18 +75,7 @@ public class StreamAnalyticsDriver implements Serializable {
             if(processTypeName.contains("source"))
             {
                 listOfSourcePids.add(processInfo.getProcessId());
-
-
                 GetProperties getProperties=new GetProperties();
-             /*   List<GetPropertiesInfo> propertiesInfoList= (List<GetPropertiesInfo>) getProperties.getProperties(parentProcessId.toString(),"message");
-                if (propertiesInfoList!=null && propertiesInfoList.get(0)!=null)
-                {
-                    String messageName=propertiesInfoList.get(0).getValue();
-                    Messages messages=messagesDAO.get(messageName);
-                    pidMessageTypeMap.put(processInfo.getProcessId(),messages.getFormat());
-                }
-                */
-
                 Properties properties=  getProperties.getProperties(processInfo.getProcessId().toString(),"message");
                 String messageName = properties.getProperty("messageName");
                 LOGGER.info("messagename is "+messageName);
@@ -119,9 +108,7 @@ public class StreamAnalyticsDriver implements Serializable {
 
         long batchDuration = 10000;
 
-        //TODO: Fetch batchDuration property from database
         GetProperties getProperties=new GetProperties();
-        //List<GetPropertiesInfo> propertiesInfoList= (List<GetPropertiesInfo>) getProperties.getProperties(parentProcessId.toString(),"batchDuration");
         Properties properties=  getProperties.getProperties(parentProcessId.toString(),"batchDuration");
         //TODO get batchduration properties from parent process
         if(properties.getProperty("batchDuration") != null)
@@ -140,7 +127,6 @@ public class StreamAnalyticsDriver implements Serializable {
         }
         streamAnalyticsDriver.createDStreams(ssc,listOfSourcePids);
         streamAnalyticsDriver.createDataFrames(ssc, listOfSourcePids, prevMap, nextPidMap,broadcastVar);
-        ssc.addStreamingListener(new JobListener());
         ssc.start();
         ssc.awaitTermination();
     }
@@ -244,9 +230,9 @@ public class StreamAnalyticsDriver implements Serializable {
                                                                   //String messageType = pidMessageTypeMap.get(pid);
                                                                   //String messageType = "Regex";
                                                                   //TODO: Add logic to handle other message types like delimited, etc..
-                                                                  if (messageType.equals("Regex")) {
+                                                                  if (messageType.equalsIgnoreCase("Regex")) {
                                                                       attributes = new RegexParser().parseRecord(record, pid);
-                                                                  } else if (messageType.equals("Delimited")) {
+                                                                  } else if (messageType.equalsIgnoreCase("Delimited")) {
                                                                       attributes = new DelimitedTextParser().parseRecord(record, pid);
                                                                   }
                                                                   return RowFactory.create(attributes);
@@ -303,10 +289,14 @@ public class StreamAnalyticsDriver implements Serializable {
                 System.out.println("pid for transformation or emitter= " + pid);
                 if(pidDataFrameMap.get(pid)!=null)
                     pidDataFrameMap.get(pid).show(100);
+                System.out.println("listOfTransformations = " + listOfTransformations);
                 if (listOfTransformations.contains(pid)) {
+                    System.out.println(" inside transformation ");
                     //this pid is of type transformation, find prev pids to output the appropriate dataframe
                     Set<Integer> prevPids = prevMap.get(pid);
+                    System.out.println("prevMap = " + prevMap);
                     if (prevPids.size() > 1) {
+                        System.out.println(" inside union " );
                         //obtain list of corresponding prevDataFrames for all prevPids
                         DataFrame[] prevDataFrames = new DataFrame[prevPids.size()];
                         GetParentProcessType getParentProcessType=new GetParentProcessType();
@@ -321,6 +311,8 @@ public class StreamAnalyticsDriver implements Serializable {
                         //this transformation involves multiple upstream dataframes, e.g: join or union etc.
                         //find the transformation type and create dataframe accordingly
                     } else {
+                        System.out.println(" inside filter " );
+                        System.out.println("pid = " + pid);
                         //this transformation contains only one upstream pid
                         List<Integer> prevPidList = new ArrayList<Integer>();
                         prevPidList.addAll(prevMap.get(pid));
@@ -329,7 +321,8 @@ public class StreamAnalyticsDriver implements Serializable {
                         String transformationType = "filter";
                         GetParentProcessType getParentProcessType=new GetParentProcessType();
                         transformationType=getParentProcessType.processTypeName(pid).replace("operator_","");
-                        if (transformationType.equals("filter")) {
+                        System.out.println("transformationType = " + transformationType);
+                        if (transformationType.equalsIgnoreCase("filter")) {
                             Filter filter = new Filter();
                             DataFrame dataFramePostTransformation = filter.transform(pidDataFrameMap, prevMap, pid);
                             pidDataFrameMap.put(pid, dataFramePostTransformation);

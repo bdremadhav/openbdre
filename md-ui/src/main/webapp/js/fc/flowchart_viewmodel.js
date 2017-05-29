@@ -383,6 +383,7 @@ var flowchart = {
     //
     flowchart.ChartViewModel = function (chartDataModel) {
         this.selectedProcess = {};
+        this.columnList={};
         this.selectedProcessProps = {};
         this.selectedProcessGenConfigProp = {};
 
@@ -441,7 +442,7 @@ var flowchart = {
             return new flowchart.ConnectionViewModel(connectionDataModel, sourceConnector, destConnector);
         }
 
-        // 
+        //
         // Wrap the connections data-model in a view-model.
         //
         this._createConnectionsViewModel = function (connectionsDataModel) {
@@ -528,12 +529,12 @@ var flowchart = {
                 this.data.nodes = [];
             }
 
-            // 
+            //
             // Update the data model.
             //
             this.data.nodes.push(nodeDataModel);
 
-            // 
+            //
             // Update the view model.
             //
             var nodedm = new flowchart.NodeViewModel(nodeDataModel);
@@ -564,6 +565,7 @@ var flowchart = {
         //
         this.deselectAll = function () {
             this.selectedProcess = {};
+            this.columnList={};
             this.selectedProcessProps = {};
             this.selectedProcessGenConfigProp = {};
             this.selectedProcessConfigKeyValue = {};
@@ -606,6 +608,7 @@ var flowchart = {
                 this.deselectAll();
                 node.select();
                 var tempProcessData;
+                var tempColumnList;
                 var tempPropertiesData;
                 var pid = node.data.pid;
                 if (pid < 0) pid = -node.data.pid;
@@ -616,6 +619,17 @@ var flowchart = {
                     alertBox('danger', 'Error has occured');
                 }
                 this.selectedProcess = tempProcessData;
+
+                 var dataRecord = messagesAC('/mdrest/sparkstreaming/getmessagecolumns/'+this.selectedProcess.processId, 'POST', [this.selectedProcess.processId]);
+                    if (dataRecord) {
+                        tempColumnList = dataRecord;
+                    } else {
+                        alertBox('danger', 'Error has occured');
+                    }
+                    this.columnList=tempColumnList;
+
+
+
                 var dataRecord = propertiesAC('/mdrest/properties/', 'GET', node.data.pid);
                 if (dataRecord) {
                     tempPropertiesData = dataRecord;
