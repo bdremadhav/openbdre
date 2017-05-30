@@ -7,6 +7,10 @@
 <html>
 
 	<head>
+	      <script src="../js/jquery.min.js"></script>
+	      <script src="../js/materialize.min.js" type="text/javascript"></script>
+          <script src="../js/angular.min.js"></script>
+
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<script src="../js/jquery.min.js"></script>
 		<link href="../css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
@@ -323,6 +327,7 @@ wizard = $(document).ready(function() {
                 var app = angular.module('myApp', []);
                 app.controller('myCtrl', function($scope) {
                     $scope.fileformats= getGenConfigMap('file_format');
+                    console.log($scope.fileformats);
                     $scope.formatMap=null;
                     $scope.busDomains = {};
                     $.ajax({
@@ -337,6 +342,13 @@ wizard = $(document).ready(function() {
                             alert('danger');
                         }
                     });
+
+
+                     $scope.changeme = function() {
+                        console.log("function call is happening ");
+                         alert('here');
+                       }
+
 
 
                     $scope.workflowTypes = {};
