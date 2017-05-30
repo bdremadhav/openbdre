@@ -856,6 +856,7 @@
                                     title: '<spring:message code="process.page.title_app"/>',
                                     type: 'combobox',
                                     options: '/mdrest/busdomain/options/',
+                                    list:false,
                                     defaultValue: "1"
                                 },
                                 permissionTypeByUserAccessId: {
@@ -868,7 +869,7 @@
                                 permissionTypeByGroupAccessId: {
                                   title: '<spring:message code="process.page.title_group_access"/>',
                                   type: 'combobox',
-                                  list: true,
+                                  list: false,
                                   options: '/mdrest/process/options/',
                                   defaultValue: "6"
                                },
@@ -882,11 +883,11 @@
                                ownerRoleId: {
                                  title: '<spring:message code="process.page.title_owner_group"/>',
                                  type: 'combobox',
-                                 list:true,
+                                 list:false,
                                  options: '/mdrest/userroles/options/',
                               },
                               userName: {
-                                       title: '<spring:message code="process.page.title_username"/>',
+                                       title: 'User',
                                         create:false,
                                         edit:false
                                     },
@@ -903,6 +904,7 @@
                                 workflowId: {
                                     title: '<spring:message code="process.page.title_wf_type"/>',
                                     type: 'combobox',
+                                    list:false,
                                     options: '/mdrest/workflowtype/optionslist',
                                     defaultValue: "1"
                                 },
@@ -1107,6 +1109,7 @@
                                     listClass: 'bdre-jtable-button',
                                     create: false,
                                     edit: false,
+                                    list:false,
                                     display: function(data) {
                                         return '<span class="label-icons label-pipeline" onclick="fetchPipelineInfo(' + data.record.processId + ')"></span> ';
                                     },
@@ -1115,6 +1118,7 @@
                                     width: '5%',
                                     sorting: false,
                                     edit: false,
+                                    list:false,
                                     create: false,
                                     title: '<spring:message code="process.page.title_deploy_job"/>',
 
@@ -1199,6 +1203,7 @@
                                     sorting: false,
                                     title: 'Executions',
                                     edit: false,
+                                    list:false,
                                     create: false,
                                     listClass: 'bdre-jtable-button',
                                         display: function(item) {                         //Create an image that will be used to open child table
@@ -1306,6 +1311,7 @@
                                     title: '<spring:message code="process.page.title_sla_monitoring"/>',
                                     width: '10%',
                                     sorting: false,
+                                    list: false,
                                     create: false,
                                     edit: false,
                                     display: function(data) {

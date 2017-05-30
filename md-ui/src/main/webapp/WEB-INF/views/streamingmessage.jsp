@@ -18,6 +18,7 @@
 		<link href="../css/bootstrap.custom.css" rel="stylesheet" />
 		<script src="../js/bootstrap.js" type="text/javascript"></script>
 		<script src="../js/jquery.jtable.js" type="text/javascript"></script>
+		<script src="../js/materialize.min.js" type="text/javascript"></script>
 		<script src="../js/angular.min.js" type="text/javascript"></script>
 		<link href="../css/jtables-bdre.css" rel="stylesheet" type="text/css" />
 		<script >
@@ -359,12 +360,12 @@ wizard = $(document).ready(function() {
 
 
 	</head>
-<body ng-app="myApp" ng-controller="myCtrl" >
+<body>
 	<div class="page-header">Creating Message</div>
 	<div class="alert alert-info" role="alert">
 		Message details
 	</div>
-	<div id="bdre-data-load" ng-controller="myCtrl">
+	<div  ng-app="myApp" id="bdre-data-load" ng-controller="myCtrl">
 
 
 
@@ -386,14 +387,20 @@ wizard = $(document).ready(function() {
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-sm-2" for="fileformat"><spring:message code="dataload.page.file_format"/></label>
+                                            <label class="control-label col-sm-2"  for="fileformat"><spring:message code="dataload.page.file_format"/></label>
                                             <div class="col-sm-10">
-                                                <select class="form-control" id="fileformat" name="fileformat" >
-                                                    <option ng-repeat="fileformat in fileformats" value="{{fileformat.defaultVal}}" name="fileformat">{{fileformat.value}}</option>
+                                                <select class="form-control" id="fileformat" name="fileformat" ng-model="fileformat1" ng-options = "file as val.value for (file, val) in fileformats" >
+                                                    <option value="">Select the option</option>
 
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="form-group" ng-if="fileformat1 == 'delimited'" >
+                                        <label class="control-label col-sm-2" for="delimiter">Delimiter</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control"  id="delimiter" name="delimiter" placeholder="Delimiter" value="" required>
+                                        </div>
+                                    </div>
                                         <div class="clearfix"></div>
                                         </div>
 

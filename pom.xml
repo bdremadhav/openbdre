@@ -405,6 +405,14 @@
                 <artifactId>jquery</artifactId>
                 <version>${jquery.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.webjars/materializecss -->
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>materializecss</artifactId>
+                <version>${materializecss.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>bootstrap</artifactId>
