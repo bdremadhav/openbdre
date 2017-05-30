@@ -7,11 +7,11 @@
 <html>
 
 	<head>
-	      <script src="../js/jquery.min.js"></script>
-	      <script src="../js/materialize.min.js" type="text/javascript"></script>
-          <script src="../js/angular.min.js"></script>
-
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <script data-require="jquery" data-semver="3.0.0" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.js"></script>
+        <script src="../js/materialize.min.js" type="text/javascript"></script>
+        <script data-require="angular.js@1.4.x" src="https://code.angularjs.org/1.4.9/angular.js" data-semver="1.4.9"></script>
 		<script src="../js/jquery.min.js"></script>
 		<link href="../css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
 		<link href="../css/css/bootstrap.min.css" rel="stylesheet" />
@@ -22,7 +22,7 @@
 		<link href="../css/bootstrap.custom.css" rel="stylesheet" />
 		<script src="../js/bootstrap.js" type="text/javascript"></script>
 		<script src="../js/jquery.jtable.js" type="text/javascript"></script>
-		<script src="../js/materialize.min.js" type="text/javascript"></script>
+
 		<script src="../js/angular.min.js" type="text/javascript"></script>
 		<link href="../css/jtables-bdre.css" rel="stylesheet" type="text/css" />
 		<script >
