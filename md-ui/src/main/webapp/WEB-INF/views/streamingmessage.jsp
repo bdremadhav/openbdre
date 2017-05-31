@@ -7,22 +7,40 @@
 <html>
 
 	<head>
-	      <script src="../js/jquery.min.js"></script>
-	      <script src="../js/materialize.min.js" type="text/javascript"></script>
-          <script src="../js/angular.min.js"></script>
-
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<script src="../js/jquery.min.js"></script>
+        <style>
+        .label-icons {
+                    margin: 0 auto;
+                    width: 45px;
+                    height: 45px;
+                    background-size: 100% !important;
+                    display: block;
+                    background-repeat: no-repeat !important;
+                    background-position: center !important;
+                }
+                .label-properties {
+                    background: url('../css/images/properties.png') no-repeat center;
+                }
+
+                .jtable-bottom-panel,.jtable-no-data-row{
+                    display: none;
+                }
+                #Process{
+                position:absolute;
+                bottom:30px;
+                right:0;
+                }
+        </style>
+		<script src="../js/jquery.min.js" type="text/javascript" ></script>
 		<link href="../css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
 		<link href="../css/css/bootstrap.min.css" rel="stylesheet" />
-		<script src="../js/jquery-ui-1.10.3.custom.js"></script>
-		<script src="../js/jquery.steps.min.js"></script>
+		<script src="../js/jquery.steps.min.js" type="text/javascript"></script>
 		<link rel="stylesheet" href="../css/jquery.steps.css" />
 		<link rel="stylesheet" href="../css/jquery.steps.custom.css" />
 		<link href="../css/bootstrap.custom.css" rel="stylesheet" />
 		<script src="../js/bootstrap.js" type="text/javascript"></script>
+		<script src="../js/jquery-ui-1.10.3.custom.js" type="text/javascript"></script>
 		<script src="../js/jquery.jtable.js" type="text/javascript"></script>
-		<script src="../js/materialize.min.js" type="text/javascript"></script>
 		<script src="../js/angular.min.js" type="text/javascript"></script>
 		<link href="../css/jtables-bdre.css" rel="stylesheet" type="text/css" />
 		<script >
@@ -31,7 +49,6 @@
                 }
         		</script >
 		<script>
-
 var jsonObj = {"Result":"OK","Records":[],"Message":null,"TotalRecordCount":0,"Record":[]};
 var map = new Object();
 var createJobResult;
@@ -97,8 +114,7 @@ wizard = $(document).ready(function() {
 	$("#bdre-data-load").steps({
 		headerTag: "h3",
 		bodyTag: "section",
-		transitionEffect: "slideLeft",
-		stepsOrientation: "vertical",
+		transitionEffect: "slide",
 		enableCancelButton: true,
 		onStepChanging: function(event, currentIndex, newIndex) {
 			console.log(currentIndex + 'current ' + newIndex );
@@ -111,13 +127,14 @@ wizard = $(document).ready(function() {
 		},
 		onStepChanged: function(event, currentIndex, priorIndex) {
 			console.log(currentIndex + " " + priorIndex);
-			if(currentIndex == 2 && priorIndex == 1) {
+			if(currentIndex == 1 && priorIndex == 0) {
 				{
 
-					formIntoMap('fileformat_', 'fileFormat');
-					jtableIntoMap('rawtablecolumn_', 'rawTableColumnDetails');
+
 
 					$('#createjobs').on('click', function(e) {
+                         formIntoMap('fileformat_', 'fileFormat');
+                         jtableIntoMap('rawtablecolumn_', 'rawTableColumnDetails');
 
 						$.ajax({
 							type: "POST",
@@ -165,7 +182,7 @@ wizard = $(document).ready(function() {
 			}
 		},
 		onCanceled: function(event) {
-			location.href = '<c:url value="/pages/dataload.page"/>';
+			location.href = '<c:url value="/pages/streamingmessage.page"/>';
 		}
 	});
 });
@@ -343,14 +360,6 @@ wizard = $(document).ready(function() {
                         }
                     });
 
-
-                     $scope.changeme = function() {
-                        console.log("function call is happening ");
-                         alert('here');
-                       }
-
-
-
                     $scope.workflowTypes = {};
                     $.ajax({
                     url: '/mdrest/workflowtype/optionslist',
@@ -366,27 +375,146 @@ wizard = $(document).ready(function() {
                     });
                 });
         </script>
+     <script>
+      function changeme()
+      {
+         var filetype = document.getElementById('fileformat').value;
+         console.log("filetype is "+filetype);
+       console.log("function call is happening ");
+       if(filetype == 'string:delimited')
+       document.getElementById('dilimiteddiv').style.display='block';
+       else
+       document.getElementById('dilimiteddiv').style.display='none';
+      }
+     </script>
+  <script type="text/javascript">
+    		    $(document).ready(function () {
+    	    $('#Container').jtable({
+    	    title: 'Message List',
+    		    paging: true,
+    		    pageSize: 10,
+    		    sorting: true,
+    		    actions: {
+    		    listAction: function (postData, jtParams) {
+    		    console.log(postData);
+    			    return $.Deferred(function ($dfd) {
+    			    $.ajax({
+    			    url: '/mdrest/message?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
+    				    type: 'GET',
+    				    data: postData,
+    				    dataType: 'json',
+    				    success: function (data) {
+    				    $dfd.resolve(data);
+    				    },
+    				    error: function () {
+    				    $dfd.reject();
+    				    }
+    			    });
+    			    });
+    			    }
+    		    },
+    		    fields: {
+    		    messagename: {
+    		        key : true,
+    			    list: true,
+    			    create:true,
+    			    edit: false,
+    			    title: 'Message Name'
+    		    },
+    			    Properties: {
+                    title: 'Schema',
+                    width: '5%',
+                    sorting: false,
+                    edit: false,
+                    create: false,
+                    listClass: 'bdre-jtable-button',
+                    display: function(item) { //Create an image that will be used to open child table
 
+                        var $img = $('<span class="label-icons label-properties"></span>'); //Open child table when user clicks the image
 
+                        $img.click(function() {
+                            $('#Container').jtable('openChildTable',
+                                $img.closest('tr'), {
+                                    title: ' <spring:message code="process.page.title_properties_of"/>'+' ' + item.record.messagename,
+                                    paging: true,
+                                    pageSize: 10,
+                                    actions: {
+                                        listAction: function(postData,jtParams) {
+                                            return $.Deferred(function($dfd) {
+                                                console.log(item);
+                                                $.ajax({
+                                                    url: '/mdrest/message/' + item.record.messagename+'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
+                                                    type: 'GET',
+                                                    data: item,
+                                                    dataType: 'json',
+                                                    success: function(data) {
+                                                       if(data.Result == "OK") {
+
+                                                           $dfd.resolve(data);
+
+                                                       }
+                                                       else
+                                                       {
+                                                        $dfd.resolve(data);
+                                                       }
+                                                   },
+                                                    error: function() {
+                                                        $dfd.reject();
+                                                    }
+                                                }); ;
+                                            });
+                                        }
+                                    },
+                                    fields: {
+
+                                        columnName: {
+                                            key: true,
+                                            list: true,
+                                            create: false,
+                                            edit: true,
+                                            title: 'Column',
+                                            defaultValue: item.record.columnName,
+                                        },
+                                        dataType: {
+                                                key: true,
+                                                list: true,
+                                                create: false,
+                                                edit: true,
+                                                title: 'Type',
+                                                defaultValue: item.record.dataType,
+                                            }
+
+                                    }
+                                },
+                                function(data) { //opened handler
+
+                                    data.childTable.jtable('load');
+                                });
+                        }); //Return image to show on the person row
+
+                        return $img;
+                    }
+                }
+    		    }
+    	    });
+    		    $('#Container').jtable('load');
+    	    });
+    	</script>
 
 
 
 	</head>
 <body>
-	<div class="page-header">Creating Message</div>
-	<div class="alert alert-info" role="alert">
-		Message details
-	</div>
+<div class='col-md-4'>
+<section style="width:100%;text-align:center;">
+	<div id="Container"></div>
+    </section>
+</div>
+
+ <div class='col-md-8'>
 	<div  ng-app="myApp" id="bdre-data-load" ng-controller="myCtrl">
-
-
-
-
-			<h3><div class="number-circular">1</div>Message details</h3>
+			<h3>Message details</h3>
             			<section>
-            			 <div class="alert alert-info" role="alert">
-                                          Message details form
-                                        </div>
             <form class="form-horizontal" role="form" id="fileFormat">
 
 
@@ -401,13 +529,13 @@ wizard = $(document).ready(function() {
                                         <div class="form-group">
                                             <label class="control-label col-sm-2"  for="fileformat"><spring:message code="dataload.page.file_format"/></label>
                                             <div class="col-sm-10">
-                                                <select class="form-control" id="fileformat" name="fileformat" ng-model="fileformat1" ng-options = "file as val.value for (file, val) in fileformats" >
-                                                    <option value="">Select the option</option>
+                                                <select class="form-control" id="fileformat" name="fileformat" onchange="changeme()" ng-model="fileformat1" ng-options = "file as val.value for (file, val) in fileformats" >
+                                                    <option  value="">Select the option</option>
 
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="form-group" ng-if="fileformat1 == 'delimited'" >
+                                        <div id="dilimiteddiv"class="form-group" style="display:none;" >
                                         <label class="control-label col-sm-2" for="delimiter">Delimiter</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control"  id="delimiter" name="delimiter" placeholder="Delimiter" value="" required>
@@ -419,19 +547,18 @@ wizard = $(document).ready(function() {
                                         <!-- /btn-group -->
 
                                     </form>
+
+
             			</section>
-			<h3><div class="number-circular">2</div>Message Schema</h3>
+			<h3>Message Schema</h3>
 			<section>
 			    <div id="rawTableColumnDetails"></div>
+			    <div id="Process">
+                <button id="createjobs" type="button" class="btn btn-primary btn-lg">Create Message</button>
+            </div>
 			    </section>
-			<h3><div class="number-circular">3</div><spring:message code="dataload.page.confirm"/></h3>
-			<section>
-				<div id="Process">
-					<button id="createjobs" type="button" class="btn btn-primary btn-lg">Create Message</button>
-				</div>
-			</section>
 		</div>
-
+        </div>
 		<div style="display:none" id="div-dialog-warning">
 			<p><span class="ui-icon ui-icon-alert" style="float:left;"></span></p>
 		</div>
@@ -521,14 +648,13 @@ wizard = $(document).ready(function() {
 				create: true,
 				title: 'Data Type',
 				edit: true,
-				options:{ 'BigInt':'BigInt',
-                          'SmallInt':'SmallInt',
-                          'Float':'Float',
-                          'Double':'Double',
+				options:{ 'String':'String',
+                          'Number':'Number',
                           'Decimal':'Decimal',
-                          'Timestamp':'Timestamp',
-                          'Date':'Date',
-                          'String':'String'}
+                          'Boolean':'Boolean',
+                          'Decimal':'Decimal',
+                          'Date':'Date'
+                          }
 			}
 		}
 
@@ -587,8 +713,6 @@ function buildForm(fileformat) {
 			});
 			}
 			formHTML = formHTML + '</form>';
-			div.innerHTML = formHTML;
-			console.log(div);
 		}
 	});
 	return true;

@@ -628,27 +628,8 @@
                                                 <label for="description"><spring:message code="wfdesigner.page.description"/></label>
                                                 <input type="text" class="form-control" id="description" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="application"><spring:message code="wfdesigner.page.domain"/></label>
-                                                <select class="form-control" id="domain">
-                                                    <option ng-repeat="busdomain in newPageBusDomain" id="{{$index}}" value="{{ busdomain.Value }}">{{ busdomain.DisplayText }}</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="type"><spring:message code="wfdesigner.page.type"/></label>
-                                                <select class="form-control" id="type">
-                                                    <option ng-repeat="type in newPageProcessType" id="{{$index}}" value="{{ type.Value }}">{{ type.DisplayText }}</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="workflowtype"><spring:message code="wfdesigner.page.workflow_type"/></label>
-                                                <select class="form-control" id="workflowtype">
-                                                    <option ng-repeat="workflowtype in newPageWorkflowType" id="{{$index}}" value="{{ workflowtype.Value }}">{{ workflowtype.DisplayText }}</option>
-                                                </select>
-                                            </div>
                                             <div class="actions text-center pull-right">
-                                            <button type="submit" class="btn btn-primary" ng-click="createFirstProcess()"><spring:message code="wfdesigner.page.create_process"/></button>
+                                            <button type="submit" class="btn btn-primary" ng-click="createFirstProcess()">Create Workflow</button>
                                             </div>
                                         </form>
                                     </div>

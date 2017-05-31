@@ -849,14 +849,14 @@ $scope.createFirstProcess = function() {
         'canRecover': '0',
         'nextProcessIds': '0',
         'enqProcessId': '0',
-        'busDomainId': $('#domain').val(),
+        'busDomainId': '1',
         'ownerRoleId':$('#ownerRoleId').val(),
          'permissionTypeByUserAccessId': $('#permissionTypeByUserAccessId').val(),
          'permissionTypeByGroupAccessId': $('#permissionTypeByGroupAccessId').val(),
          'permissionTypeByOthersAccessId': $('#permissionTypeByOthersAccessId').val(),
-        'processTypeId': $('#type').val(),
+        'processTypeId': '41',
         'processTemplateId': '',
-        'workflowId': $('#workflowtype').val()
+        'workflowId': '2'
     };
     postData = $.param(postData),
     dataRecord = processAC('/mdrest/process', 'PUT', postData);
