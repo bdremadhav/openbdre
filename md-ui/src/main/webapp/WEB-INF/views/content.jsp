@@ -55,6 +55,7 @@
 				}
 				.navbar-inverse .navbar-nav>li>a {
                     color: #FFFFFF;
+                    font-weight: bold;
                 }
 				
 				#foot {
@@ -249,7 +250,7 @@
                             }
                             $scope.menu = [
                                            {
-                                                               label: "Message Configuration",
+                                                            label: "Message Configuration",
                            									collapse: "1",
                            									url: "streamingmessage.page",
                            									children: []
@@ -259,7 +260,7 @@
                            									url: "wfdesigner2.page",
                            									children: []
                            				},{
-                                                               label: "Created Workflows",
+                                                            label: "Created Workflows",
                            									collapse: "1",
                            									url: "process.page",
                            									children: []

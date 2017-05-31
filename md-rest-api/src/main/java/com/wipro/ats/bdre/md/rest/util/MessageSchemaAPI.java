@@ -1,7 +1,8 @@
 package com.wipro.ats.bdre.md.rest.util;
 
+import com.wipro.ats.bdre.exception.MetadataException;
 import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
-import com.wipro.ats.bdre.md.beans.table.WorkflowType;
+import com.wipro.ats.bdre.md.beans.table.MessageColumnSchema;
 import com.wipro.ats.bdre.md.dao.MessagesDAO;
 import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import com.wipro.ats.bdre.md.rest.RestWrapper;
@@ -10,9 +11,7 @@ import com.wipro.ats.bdre.md.rest.ext.DataLoadAPI;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -127,6 +126,70 @@ public class MessageSchemaAPI extends MetadataAPIBase {
             restWrapperOptions = new RestWrapperOptions(e.getMessage(), RestWrapperOptions.ERROR);
         }
         return restWrapperOptions;
+    }
+
+
+
+
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @ResponseBody public
+    RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
+                     @RequestParam(value = "size", defaultValue = "10") int pageSize, Principal principal) {
+        RestWrapper restWrapper = null;
+        try {
+
+            List<com.wipro.ats.bdre.md.dao.jpa.Messages> jpaMessageList = messagesDAO.list(startPage, pageSize);
+            Integer counter=jpaMessageList.size();
+            List<com.wipro.ats.bdre.md.beans.table.Messages> messagesList = new ArrayList<>();
+            for (com.wipro.ats.bdre.md.dao.jpa.Messages messages : jpaMessageList) {
+                com.wipro.ats.bdre.md.beans.table.Messages messages1=new com.wipro.ats.bdre.md.beans.table.Messages();
+                messages1.setMessageSchema(messages.getMessageSchema());
+                messages1.setMessagename(messages.getMessagename());
+                messages1.setFormat(messages.getFormat());
+                messages1.setCounter(counter);
+                messagesList.add(messages1);
+            }
+            restWrapper = new RestWrapper(messagesList, RestWrapper.OK);
+            LOGGER.info("All records listed from Message list by User:" + principal.getName());
+
+        } catch (MetadataException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        }
+        return restWrapper;
+    }
+
+
+
+    @RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
+
+
+    @ResponseBody
+    public RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
+                            @RequestParam(value = "size", defaultValue = "10") int pageSize,
+                            @PathVariable("id") String messageId, Principal principal) {
+
+        RestWrapper restWrapper = null;
+        try{
+            Messages message = messagesDAO.get(messageId);
+            String schema = message.getMessageSchema();
+            String[] columnAndDataTypes = schema.split(",");
+           List<MessageColumnSchema> messageColumnSchemaList=new ArrayList<>();
+            int counter=columnAndDataTypes.length;
+            for(String s : columnAndDataTypes){
+                String tmp[]=s.split(":");
+                MessageColumnSchema messageColumnSchema=new MessageColumnSchema();
+                messageColumnSchema.setColumnName(tmp[0]);
+                messageColumnSchema.setDataType(tmp[1]);
+                messageColumnSchema.setCounter(counter);
+                messageColumnSchemaList.add(messageColumnSchema);
+            }
+            restWrapper = new RestWrapper(messageColumnSchemaList, RestWrapperOptions.OK);
+        } catch (MetadataException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        }
+        return restWrapper;
     }
 
 

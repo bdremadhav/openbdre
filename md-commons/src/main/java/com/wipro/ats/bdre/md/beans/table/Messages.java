@@ -16,6 +16,16 @@ public class Messages {
     @NotNull
     @Size(max = 2048)
     private String messageSchema;
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    int counter;
     public String getFormat() {
         return format;
     }

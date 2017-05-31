@@ -297,7 +297,7 @@ div.jtable-main-container {
   font-weight: 300;
   font-size: 14px;
   background: #fff;
-  line-height: 1.3;
+  line-height: 2.3;
 }
 div.jtable-main-container > div.jtable-title {
   background-color: #232323;
@@ -339,7 +339,7 @@ div.jtable-main-container > div.jtable-title div.jtable-toolbar span.jtable-tool
 }
 div.jtable-main-container > div.jtable-title div.jtable-toolbar span.jtable-toolbar-item.jtable-toolbar-item-hover {
   background-color: #343434;
-  padding-bottom: 6px;
+
 }
 div.jtable-main-container > table.jtable {
   border: 1px solid #454545;
@@ -500,10 +500,10 @@ div.jtable-main-container > div.jtable-title {
     background: -o-linear-gradient(#6a6b6b, #3a3b3b);
     background: -moz-linear-gradient(#6a6b6b, #3a3b3b);
     background: -ms-linear-gradient(#6a6b6b, #3a3b3b);
-    background: linear-gradient(#6a6b6b, #3a3b3b); 
+    background: linear-gradient(#262c3a, #3a3b3b);
 }
 div.jtable-main-container > table.jtable > thead {
-  background-color: #3d525f;
+  background-color: #326cad;
 }
 div.jtable-main-container table.jtable thead th{
 	text-align: center;
@@ -519,7 +519,7 @@ div.jtable-main-container > div.jtable-title div.jtable-title-text{
 }
 
 div.jtable-main-container > table.jtable > tbody > tr.jtable-row-even{
- background-color: #FAFBFC;	
+ background-color: #bdd6ef;
 }
 div.jtable-main-container > table.jtable > tbody > tr{
 	background-color: #EFF2F4;
@@ -535,7 +535,7 @@ div.jtable-main-container > div.jtable-bottom-panel {
   text-align: center;
   padding-top: 19px;
   padding-bottom: 19px;
-  background-color: #404040;
+  background-color: #326cad;
 }
 div.jtable-main-container > div.jtable-bottom-panel div.jtable-right-area {
   position: static;
@@ -556,7 +556,7 @@ div.jtable-main-container > div.jtable-bottom-panel span.jtable-page-info{
  	background-size: 38%;
 }
 div.jtable-main-container div.jtable-title div.jtable-toolbar span.jtable-toolbar-item{
-	padding: 7px !important;
+
 }
 div.jtable-main-container > div.jtable-title div.jtable-toolbar span.jtable-toolbar-item.jtable-toolbar-item-add-record span.jtable-toolbar-item-icon {
 	background-image: url('../css/images/add_icon.png');

@@ -13,7 +13,7 @@ body {
 }
 .nav-tabs>li>a,.nav-tabs>li>a:hover{
 	background-color: #3D525F !important;
-	color: #fff !important;
+	color: #521818 !important;
 	border-radius: 4px !important;
 	margin-right: 15px;
 }
@@ -139,11 +139,11 @@ div.form-group:nth-child(odd) {
 }
 .navbar-inverse {
 	border: none;
-	background-color:rgb(101, 54, 244);
+	background-color:#2d89ef;
 	min-height: 110px;
 }
 .navbar-inverse .navbar-nav>li>a:hover {
-	color: rgb(9, 147, 219);
+	color: #521818
 }
 .navbar-nav-position>li {
 	float: none;
