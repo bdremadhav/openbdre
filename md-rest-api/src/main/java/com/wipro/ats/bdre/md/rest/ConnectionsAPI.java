@@ -7,6 +7,7 @@ import com.wipro.ats.bdre.md.dao.ConnectionPropertiesDAO;
 import com.wipro.ats.bdre.md.dao.ConnectionsDAO;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionProperties;
 import com.wipro.ats.bdre.md.dao.jpa.Connections;
+import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import com.wipro.ats.bdre.md.rest.util.Dao2TableUtil;
 import com.wipro.ats.bdre.md.rest.util.DateConverter;
 import org.apache.log4j.Logger;
@@ -158,6 +159,32 @@ public class ConnectionsAPI {
 
                 return restWrapper;
             }
+
+
+    @RequestMapping(value = {"/optionslist"}, method = RequestMethod.POST)
+    @ResponseBody
+    public RestWrapperOptions listOptions() {
+
+        RestWrapperOptions restWrapperOptions = null;
+        try {
+            List<Connections> connectionsList=connectionsDAO.list(0,0);
+
+            List<RestWrapperOptions.Option> options = new ArrayList<RestWrapperOptions.Option>();
+
+            for (Connections connections : connectionsList) {
+                RestWrapperOptions.Option option = new RestWrapperOptions.Option(connections.getConnectionName(),connections.getConnectionName());
+                options.add(option);
+                LOGGER.info(option.getDisplayText());
+            }
+
+            restWrapperOptions = new RestWrapperOptions(options, RestWrapperOptions.OK);
+        } catch (Exception e) {
+            LOGGER.error(e);
+            restWrapperOptions = new RestWrapperOptions(e.getMessage(), RestWrapperOptions.ERROR);
+        }
+        return restWrapperOptions;
+    }
+
 
 
 
