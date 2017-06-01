@@ -585,5 +585,34 @@
 'column_transformation','round','round','It returns the rounded BIGINT value of the double',1,'round','text',1
 'column_transformation','trim','trim','It returns the string resulting from trimming spaces from both ends',1,'trim','text',1
 'column_transformation','floor','floor','It returns the maximum BIGINT value that is equal or less than the double',1,'floor','text',1
+'Source_Connection_Type','kafka','Kafka','', 0,'Kafka','text', 1
+'Source_Connection_Type','TwitterSource','Twitter','', 0, 'Twitter','text', 1
+'Kafka_Source_Connection','topicName','Topic Name','', 1,'','text', 1
+'Kafka_Source_Connection','zookeeper.connect','Zookeeper URL','', 1,'','text', 1
+'Kafka_Source_Connection','bootstrap.servers','List of Kafka Brokers','', 1,'','text', 1
+'TwitterSource_Source_Connection','consumerKey','Consumerkey','OAuth consumer key', 1,'','password', 1
+'TwitterSource_Source_Connection','consumerSecret','Consumersecret','OAuth consumer secret', 1,'','password', 1
+'TwitterSource_Source_Connection','accessToken','Accesstoken','OAuth access token', 1,'','password', 1
+'TwitterSource_Source_Connection','accessTokenSecret','Accesstokensecret','OAuth toekn secret', 1,'','password', 1
+'TwitterSource_Source_Connection','keywords','HASHTAGS','keywords based on which you want filter your tweets', 1,'#BigData','text', 1
+'Emitter_Connection_Type','kafka','Kafka','', 0,'Kafka','text', 1
+'Emitter_Connection_Type','socket','Socket','', 0,'Socket','text', 1
+'Kafka_Emitter_Connection','topicName','Topic Name','', 1,'','text', 1
+'Kafka_Emitter_Connection','zookeeper.connect','Zookeeper URL','', 1,'','text', 1
+'Kafka_Emitter_Connection','bootstrap.servers','List of Kafka Brokers','', 1,'','text', 1
+'Socket_Emitter_Connection','host','Host','IP address of the machine where Socket is running', 1,'','text', 1
+'Socket_Emitter_Connection','port','Port','Port of the machine where Socket is running', 1,'','text', 1
+'PersistentStores_Connection_Type','hdfs','HDFS','', 0,'HDFS','text', 1
+'PersistentStores_Connection_Type','hive','Hive','', 0,'Hive','text', 1
+'HDFS_PersistentStores_Connection','nameNodeHost','Name Node Host','', 1,'','text', 1
+'HDFS_PersistentStores_Connection','nameNodePort','Name Node Port','', 1,'','text', 1
+'HDFS_PersistentStores_Connection','hdfsPath','HDFS PATH','', 1,'','text', 1
+'Hive_PersistentStores_Connection','connectionUrl','Connection Url','', 1,'','text', 1
+'Hive_PersistentStores_Connection','dbName','Database Name','', 1,'','text', 1
+'Hive_PersistentStores_Connection','username','Username','', 1,'','text', 1
+'Hive_PersistentStores_Connection','password','Password','', 1,'','text', 1
+
+
+
 
 

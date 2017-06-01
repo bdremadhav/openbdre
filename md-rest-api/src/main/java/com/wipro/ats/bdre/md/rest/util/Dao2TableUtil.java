@@ -131,4 +131,22 @@ public class Dao2TableUtil {
         }
         return properties;
     }
+
+    public static ConnectionProperties buildJPAConnectionProperties(String configGrp, String key, String value, String desc) {
+        ConnectionProperties properties = new ConnectionProperties();
+        try {
+            Connections connections = new Connections();
+            properties.setConnections(connections);
+            properties.setConfigGroup(configGrp);
+            properties.setPropValue(value);
+            ConnectionPropertiesId propertiesId = new ConnectionPropertiesId();
+            propertiesId.setPropKey(key);
+            properties.setId(propertiesId);
+            properties.setDescription(desc);
+
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
+        return properties;
+    }
 }

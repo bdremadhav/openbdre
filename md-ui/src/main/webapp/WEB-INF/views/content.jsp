@@ -55,7 +55,7 @@
 				}
 				.navbar-inverse .navbar-nav>li>a {
                     color: #FFFFFF;
-                    font-weight: bold;
+                    font-weight
                 }
 				
 				#foot {
@@ -248,9 +248,14 @@
                                     }
                                 }
                             }
-                            $scope.menu = [
+                            $scope.menu = [{
+                                                            label: "Connections",
+                                                            collapse: "1",
+                                                            url: "connections.page",
+                                                            children: []
+                                        },
                                            {
-                                                            label: "Message Configuration",
+                                                            label: "Messages",
                            									collapse: "1",
                            									url: "streamingmessage.page",
                            									children: []
