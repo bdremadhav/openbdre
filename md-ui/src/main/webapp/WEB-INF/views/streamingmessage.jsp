@@ -11,15 +11,15 @@
         <style>
         .label-icons {
                     margin: 0 auto;
-                    width: 45px;
-                    height: 45px;
+                    width: 15px;
+                    height: 15px;
                     background-size: 100% !important;
                     display: block;
                     background-repeat: no-repeat !important;
                     background-position: center !important;
                 }
                 .label-properties {
-                    background: url('../css/images/properties.png') no-repeat center;
+                    background: url('../css/images/subprocess-rarrow.png') no-repeat center;
                 }
 
                 .jtable-bottom-panel,.jtable-no-data-row{

@@ -621,7 +621,7 @@
 									<div class="panel-body" style="padding: 0;">
                                         <form role="form">
                                             <div class="form-group">
-                                                <label for="processName"><spring:message code="wfdesigner.page.process_name"/></label>
+                                                <label for="processName">Workflow Name</label>
                                                 <input type="text" class="form-control" id="processname" required>
                                             </div>
                                             <div class="form-group">
