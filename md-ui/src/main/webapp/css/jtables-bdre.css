@@ -502,7 +502,7 @@ div.jtable-main-container > div.jtable-title {
     background: linear-gradient(#262c3a, #3a3b3b);
 }
 div.jtable-main-container > table.jtable > thead {
-  background-color: #326cad;
+  background-color: #bdd6ef;
 }
 div.jtable-main-container table.jtable thead th{
 	text-align: center;
@@ -518,7 +518,7 @@ div.jtable-main-container > div.jtable-title div.jtable-title-text{
 }
 
 div.jtable-main-container > table.jtable > tbody > tr.jtable-row-even{
- background-color: #bdd6ef;
+ background-color: #ffffff;
  text-align: center;
 }
 div.jtable-main-container > table.jtable > tbody > tr{
@@ -528,7 +528,7 @@ div.jtable-main-container > table.jtable > tbody > tr.jtable-data-row > td{
 font-weight: 400;
 }
 div.jtable-main-container > table.jtable > thead th {
-  color: #c7cdd1;
+  color: #000000;
   font-weight: 400;
 }
 div.jtable-main-container > div.jtable-bottom-panel {
