@@ -1,6 +1,8 @@
 package com.wipro.ats.bdre.md.rest;
 
+import com.wipro.ats.bdre.exception.MetadataException;
 import com.wipro.ats.bdre.md.beans.table.Process;
+import com.wipro.ats.bdre.md.beans.table.Properties;
 import com.wipro.ats.bdre.md.dao.ConnectionPropertiesDAO;
 import com.wipro.ats.bdre.md.dao.ConnectionsDAO;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionProperties;
@@ -10,10 +12,7 @@ import com.wipro.ats.bdre.md.rest.util.DateConverter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -90,6 +89,80 @@ public class ConnectionsAPI {
 
         return restWrapper;
     }
+
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @ResponseBody
+    public RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
+                            @RequestParam(value = "size", defaultValue = "10") int pageSize, Principal principal) {
+
+        RestWrapper restWrapper = null;
+        try {
+            List<Connections> connectionsList = connectionsDAO.list(startPage, pageSize);
+            Long counter = connectionsDAO.totalRecordCount();
+            List<com.wipro.ats.bdre.md.beans.table.Connections> beanConnectionsList = new ArrayList<>();
+            for(Connections connection: connectionsList){
+                com.wipro.ats.bdre.md.beans.table.Connections beanConnection = new com.wipro.ats.bdre.md.beans.table.Connections();
+                beanConnection.setConnectionName(connection.getConnectionName());
+                beanConnection.setConnectionType(connection.getConnectionType());
+                beanConnection.setCounter(counter.intValue());
+                if(connection.getDescription() != null)
+                    beanConnection.setDescription(connection.getDescription());
+                beanConnectionsList.add(beanConnection);
+            }
+
+            restWrapper = new RestWrapper(beanConnectionsList, RestWrapper.OK);
+            LOGGER.info("All records listed from Connections by User:" + principal.getName());
+        }catch (SecurityException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        } catch (MetadataException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        }
+        return restWrapper;
+    }
+
+
+    @RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
+                            @RequestParam(value = "size", defaultValue = "10") int pageSize,
+                            @PathVariable("id") String connectionName, Principal principal) {
+
+        RestWrapper restWrapper = null;
+        try{
+            Connections connections = connectionsDAO.get(connectionName);
+            List<com.wipro.ats.bdre.md.beans.table.ConnectionProperties> returnBeanPropertiesList = new ArrayList<>();
+            List<ConnectionProperties> connectionPropertiesList = new ArrayList<>();
+            connectionPropertiesList = connectionPropertiesDAO.getConnectionsByConnectionName(connectionName,startPage,pageSize);
+            Integer counter = connectionPropertiesDAO.recordCountByConnectionName(connectionName);
+            for (ConnectionProperties connectionProperties: connectionPropertiesList){
+                com.wipro.ats.bdre.md.beans.table.ConnectionProperties returnProperties = new com.wipro.ats.bdre.md.beans.table.ConnectionProperties();
+                returnProperties.setConnectionName(connectionProperties.getId().getConnectionName());
+                returnProperties.setConfigGroup(connectionProperties.getConfigGroup());
+                returnProperties.setPropKey(connectionProperties.getId().getPropKey());
+                returnProperties.setPropValue(connectionProperties.getPropValue());
+                returnProperties.setDescription(connectionProperties.getDescription());
+                returnProperties.setCounter(counter);
+
+                returnBeanPropertiesList.add(returnProperties);
+            }
+
+                restWrapper = new RestWrapper(returnBeanPropertiesList, RestWrapper.OK);
+                LOGGER.info("Record with ID:" + connectionName + "selected from Properties by User:" + principal.getName());
+
+                } catch (MetadataException e) {
+                    LOGGER.error(e);
+                    restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+                }
+
+                return restWrapper;
+            }
+
+
+
+
+
 
 
 }
