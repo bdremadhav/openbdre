@@ -382,8 +382,8 @@
                                             <form class="form-horizontal" role="form" ng-if="genConfig.type == 'hdfs'">
 
                                                 <div class="form-group">
-                                                    <label for="connectionName">Connection Name</label>
-                                                    <select class="form-control" id="connectionName">
+                                                    <label for="hdfsConnectionName">Connection Name</label>
+                                                    <select class="form-control" id="hdfsConnectionName">
                                                         <option ng-repeat="connection in connectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
                                                     </select>
                                                 </div>

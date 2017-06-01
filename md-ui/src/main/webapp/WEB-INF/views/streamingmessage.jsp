@@ -150,6 +150,7 @@ wizard = $(document).ready(function() {
 										modal: true,
 										buttons: {
 											"Ok": function() {
+											    $('#Container').jtable('load');
 												$(this).dialog("close");
 											}
 										}
@@ -537,7 +538,7 @@ wizard = $(document).ready(function() {
                     </div>
 
                   <div class="form-group">
-                    <label class="control-label col-sm-2"  for="fileformat">Message Type</label>
+                    <label class="control-label col-sm-2"  for="fileformat">Message Template</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="fileformat" name="fileformat" onchange="changeme()" ng-model="fileformat1" ng-options = "file as val for (file, val) in messageTypes" >
                             <option  value="">Select the option</option>

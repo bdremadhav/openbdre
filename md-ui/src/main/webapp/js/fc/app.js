@@ -416,12 +416,14 @@ var map=new Object();
 //var value4=document.getElementById("offsets.topic.num.partitions").value;
 //var value5=document.getElementById("offsets.topic.replication.factor").value;
 var value6=document.getElementById("messageName").value;
+var value7=document.getElementById("connectionName").value;
 //map["Topic Name"]=value1;
 //map["zookeeper.connect"]=value2;
 //map["bootstrap.servers"]=value3;
 //map["offsets.topic.num.partitions"]=value4;
 //map["offsets.topic.replication.factor"]=value5;
 map["messageName"]=value6;
+map["connectionName"]=value7;
 console.log("property6 is "+value6);
 
 
@@ -459,7 +461,7 @@ map["filtervalue"]=value3;
             data: jQuery.param(map),
             success: function(data) {
                 if(data.Result == "OK") {
-                    alertBox("info","kafka properties added");
+                    alertBox("info","operator properties added");
                 }
                 else
                 alertBox("warning","Error occured");
@@ -474,8 +476,10 @@ $scope.insertHdfsProp=function(processId){
 var value1=document.getElementById("messageName").value;
 console.log("values are "+value1);
 console.log("processId is "+processId);
+var value7=document.getElementById("hdfsConnectionName").value;
 var map=new Object();
 map["messageName"]=value1;
+map["connectionName"]=value7;
     $.ajax({
             type: "POST",
             url: "/mdrest/properties/"+processId,

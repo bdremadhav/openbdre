@@ -368,6 +368,7 @@ function source()
                                                      modal: true,
                                                      buttons: {
                                                          "Ok": function() {
+                                                             $('#Container').jtable('load');
                                                              $(this).dialog("close");
                                                          }
                                                      }
