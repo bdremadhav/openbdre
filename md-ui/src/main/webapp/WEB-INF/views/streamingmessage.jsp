@@ -121,8 +121,6 @@ wizard = $(document).ready(function() {
 			console.log(currentIndex + 'current ' + newIndex );
 			if(currentIndex == 0 && newIndex == 1) {
 			console.log(document.getElementById('fileFormat').elements[1].value);
-			      if(document.getElementById('fileFormat')!=null)
-			    buildForm(document.getElementById('fileFormat').elements[1].value);
 			}
 			return true;
 		},
