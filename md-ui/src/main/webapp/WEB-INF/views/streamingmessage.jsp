@@ -56,6 +56,7 @@ var requiredProperties;
 var sourceFlag;
 var created = 0;
 
+
 var getGenConfigMap = function(cfgGrp){
     var map = new Object();
     $.ajax({
@@ -129,7 +130,7 @@ wizard = $(document).ready(function() {
 			console.log(currentIndex + " " + priorIndex);
 			if(currentIndex == 1 && priorIndex == 0) {
 				{
-
+                    $('#rawTableColumnDetails').jtable('load');
 
 
 					$('#createjobs').on('click', function(e) {
@@ -345,7 +346,7 @@ wizard = $(document).ready(function() {
                 var app = angular.module('myApp', []);
                 app.controller('myCtrl', function($scope) {
                     $scope.fileformats= getGenConfigMap('file_format');
-
+                    $scope.messageTypes={'ApacheLog':'ApacheLog','RouterLogs':'RouterLogs','Custom':'Custom'};
                     console.log($scope.fileformats);
                     $scope.formatMap=null;
                     $scope.busDomains = {};
@@ -540,7 +541,7 @@ wizard = $(document).ready(function() {
                   <div class="form-group">
                     <label class="control-label col-sm-2"  for="fileformat">Message Template</label>
                     <div class="col-sm-10">
-                        <select class="form-control" id="fileformat" name="fileformat" onchange="changeme()" ng-model="fileformat1" ng-options = "file as val for (file, val) in messageTypes" >
+                        <select class="form-control" id="messageType" name="messageType"  ng-model="messageType" ng-options = "file as val for (file, val) in messageTypes" >
                             <option  value="">Select the option</option>
                         </select>
                     </div>
@@ -584,7 +585,33 @@ wizard = $(document).ready(function() {
 		edit: false,
 		actions: {
 			listAction: function(postData, jtParams) {
-				return jsonObj;
+			var messageType = document.getElementById("messageType").value;
+             console.log("message type is "+messageType);
+             if(messageType=="")
+                messageType="NOTHING";
+                return $.Deferred(function ($dfd) {
+                $.ajax({
+                        type: "POST",
+                        url: "/mdrest/genconfig/"+messageType+"/?required=2",
+                        dataType: 'json',
+                        async: false,
+                        success: function(data) {
+                                   console.log(data);
+                                    if(data.Result == "OK") {
+                                      $dfd.resolve(data);
+                                  }
+                                  else
+                                  {
+                                   $dfd.resolve(data);
+                                  }
+
+                        },
+                        error : function(data){
+                            console.log(data);
+                        }
+
+                    });
+                });
 			},
 			createAction: function(postData) {
                 console.log(postData);
@@ -673,7 +700,7 @@ wizard = $(document).ready(function() {
 
 
 
-	$('#rawTableColumnDetails').jtable('load');
+
 
 });
 
