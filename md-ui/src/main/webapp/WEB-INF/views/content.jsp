@@ -249,7 +249,7 @@
                                 }
                             }
                             $scope.menu = [{
-                                                            label: "Connections",
+                                                            label: "Configuration Management",
                                                             collapse: "1",
                                                             url: "connections.page",
                                                             children: []
@@ -265,7 +265,7 @@
                            									url: "wfdesigner2.page",
                            									children: []
                            				},{
-                                                            label: "Created Workflows",
+                                                            label: "View Workflows",
                            									collapse: "1",
                            									url: "process.page",
                            									children: []

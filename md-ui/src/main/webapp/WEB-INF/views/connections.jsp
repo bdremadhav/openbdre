@@ -87,7 +87,7 @@ ul{
       padding: 0.25em 3.05em !important;
       border-radius: 4px !important;
       border-color: transparent;
-      font-size: 20px;
+      font-size: 18px;
   }
 
  #buttondiv li + li{
@@ -204,17 +204,17 @@ function source()
 
    <div id="tabs" style="background:transparent" width="1000px">
      <ul id="buttondiv">
-       <li><button type="button" class=" btn-primary1" onclick="source()">Source Connection</button></li>
-       <li><button type="button" class=" btn-primary1" onclick="emitter()">Emitter Connection</button></li>
-       <li><button type="button"  class=" btn-primary1" onclick="persistance()">PersistentStore Connection</button></li>
-       <li><button type="button" class=" btn-primary1" onclick="saved()">Saved Connections</button></li>
+       <li><button type="button" class=" btn-primary1" onclick="source()">Source Configuration</button></li>
+       <li><button type="button" class=" btn-primary1" onclick="emitter()">Emitter Configuration</button></li>
+       <li><button type="button"  class=" btn-primary1" onclick="persistance()">PersistentStore Configuration</button></li>
+       <li><button type="button" class=" btn-primary1" onclick="saved()">Saved Configuration</button></li>
      </ul>
      <div id="source-tab">
 
             <form class="form-horizontal" role="form" id="sourceConnectionForm">
 
                     <div id="sourceConnectionFields" class="form-group">
-                        <label class="control-label col-sm-3">Source Connection Type</label>
+                        <label class="control-label col-sm-3">Source Configuration Type</label>
                         <div id="dropdownSource" class="btn-group" >
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="srcDropdown">
                                 <span>Select Source</span><span class="caret"></span>
@@ -251,7 +251,7 @@ function source()
                      <!-- btn-group -->
                      <div id="emitterConnectionFields">
                      <div class="form-group">
-                         <label class="control-label col-sm-3">Emitter Connection Type</label>
+                         <label class="control-label col-sm-3">Emitter Configuration Type</label>
                          <div id="dropdownEmitter">
                          <div class="btn-group" >
                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="emitterDropdown">
@@ -268,7 +268,7 @@ function source()
 
 
                      <div class="form-group">
-                         <label class="control-label col-sm-3">Emitter Connection Name</label>
+                         <label class="control-label col-sm-3">Emitter Configuration Name</label>
                          <div class="col-sm-9">
                              <input type="text" class="form-control" name="emitterConnectionName">
                          </div>
@@ -292,7 +292,7 @@ function source()
                        <!-- btn-group -->
                        <div id="persistentStoresConnectionFields">
                        <div class="form-group">
-                           <label class="control-label col-sm-3">PersistentStore Connection Type</label>
+                           <label class="control-label col-sm-3">PersistentStore Configuration Type</label>
                            <div id="dropdownPersistentStores">
                            <div class="btn-group" >
                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="persistentStoresDropdown">
@@ -309,7 +309,7 @@ function source()
 
 
                        <div class="form-group">
-                           <label class="control-label col-sm-3">PersistentStore Connection Name</label>
+                           <label class="control-label col-sm-3">PersistentStore Configuration Name</label>
                            <div class="col-sm-9">
                                <input type="text" class="form-control" name="persistentStoresConnectionName">
                            </div>
