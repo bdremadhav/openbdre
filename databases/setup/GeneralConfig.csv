@@ -562,6 +562,12 @@
 'ApacheLog', 'ipAddress', 'ipAddress','ipAddress' , 1, 'ipAddress', 'String' , 1
 'ApacheLog', 'clientIdentd', 'clientIdentd','clientIdentd' , 1, 'clientIdentd', 'String' , 1
 'ApacheLog', 'userID', 'userID','userID' , 1, 'userID', 'String' , 1
+'ApacheLog', 'dateTimeString', 'dateTimeString','dateTimeString' , 1, 'dateTimeString', 'String' , 1
+'ApacheLog', 'method', 'method','method' , 1, 'method', 'String' , 1
+'ApacheLog', 'endpoint', 'endpoint','endpoint' , 1, 'endpoint', 'String' , 1
+'ApacheLog', 'protocol', 'protocol','protocol' , 1, 'protocol', 'String' , 1
+'ApacheLog', 'responseCode', 'responseCode','responseCode' , 1, 'responseCode', 'String' , 1
+'ApacheLog', 'contentSize', 'contentSize','contentSize' , 1, 'contentSize', 'String' , 1
 
 'delimited', 'serdeClass', 'Serde Class','serde class to be used' , 1, 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe', 'text' , 1
 'delimited', 'inputFormat', 'Input Format','input format to be used' , 1, 'org.apache.hadoop.mapred.TextInputFormat', 'text' , 1
