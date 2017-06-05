@@ -4,10 +4,12 @@ import com.wipro.ats.bdre.exception.MetadataException;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionProperties;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionPropertiesId;
 import com.wipro.ats.bdre.md.dao.jpa.Connections;
+import com.wipro.ats.bdre.md.dao.jpa.Properties;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,4 +111,35 @@ public class ConnectionPropertiesDAO {
             session.close();
         }
     }
+
+    public List<ConnectionProperties> getConnectionsByConnectionName(String connectionName, Integer pageNum, Integer numResults) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Criteria propertiesByConnectionName = session.createCriteria(ConnectionProperties.class).add(Restrictions.eq("connections.connectionName", connectionName));
+        propertiesByConnectionName.setFirstResult(pageNum);
+        propertiesByConnectionName.setMaxResults(numResults);
+        List<ConnectionProperties> propertiesList = propertiesByConnectionName.list();
+        session.getTransaction().commit();
+        session.close();
+        return propertiesList;
+    }
+
+    public Integer recordCountByConnectionName(String connectionName) {
+        Session session = sessionFactory.openSession();
+        Integer size = 0;
+        try {
+            session.beginTransaction();
+            Criteria propertiesByConnectionName = session.createCriteria(ConnectionProperties.class).add(Restrictions.eq("connections.connectionName", connectionName));
+            List<ConnectionProperties> propertiesList = propertiesByConnectionName.list();
+            size=propertiesList.size();
+            session.getTransaction().commit();
+        } catch (MetadataException e) {
+            session.getTransaction().rollback();
+            LOGGER.error(e);
+        } finally {
+            session.close();
+        }
+        return size;
+    }
+
 }

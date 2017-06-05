@@ -166,7 +166,7 @@
                 <script type="text/javascript">
                     $(document).ready(function() {
                     	$('#Container').jtable({
-                            title: '<spring:message code="process.page.title_list"/>',
+                            title: 'Workflow List',
                             paging: true,
                             pageSize: 10,
                             sorting: false,
@@ -801,7 +801,7 @@
                                     list: true,
                                     create: false,
                                     edit: false,
-                                    title: '<spring:message code="process.page.title_job_id"/>'
+                                    title: 'Workflow Id'
                                 },
 
                                 processName: {
@@ -1129,7 +1129,7 @@
                                 	sorting: false,
                                 	edit: false,
                                 	create: false,
-                                	title: '<spring:message code="process.page.title_run_job"/>',
+                                	title: 'Execute Workflow',
                                 	display: function(data) {
                                 		var $img2 = $('<span title=<spring:message code="process.page.img_execute_process"/> class="label-icons label-execute" ></span>');
                                 		$img2.click(function() {

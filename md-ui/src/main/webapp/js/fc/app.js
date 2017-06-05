@@ -132,6 +132,15 @@ angular.module('app', ['flowChart', ])
                     console.log('messagesOptionslist not loaded');
                 }
 
+             var connectionsOptionslist = workflowtypeOptionslistAC('/mdrest/connections/optionslist',  'POST', '');
+                 if (connectionsOptionslist) {
+                     $scope.connectionsList = connectionsOptionslist;
+                     console.log('info -- no messages options listed');
+                 }
+                 else {
+                     console.log('messagesOptionslist not loaded');
+                 }
+
 
             //
             // Setup the data-model for the chart.
@@ -401,24 +410,20 @@ $scope.updateProcessDetails = function() {
 
 $scope.insertKafkaProp=function(processId){
 var map=new Object();
-var value1=document.getElementById("Topic Name").value;
-var value2=document.getElementById("zookeeper.connect").value;
-var value3=document.getElementById("bootstrap.servers").value;
-var value4=document.getElementById("offsets.topic.num.partitions").value;
-var value5=document.getElementById("offsets.topic.replication.factor").value;
+//var value1=document.getElementById("Topic Name").value;
+//var value2=document.getElementById("zookeeper.connect").value;
+//var value3=document.getElementById("bootstrap.servers").value;
+//var value4=document.getElementById("offsets.topic.num.partitions").value;
+//var value5=document.getElementById("offsets.topic.replication.factor").value;
 var value6=document.getElementById("messageName").value;
-map["Topic Name"]=value1;
-map["zookeeper.connect"]=value2;
-map["bootstrap.servers"]=value3;
-map["offsets.topic.num.partitions"]=value4;
-map["offsets.topic.replication.factor"]=value5;
+var value7=document.getElementById("connectionName").value;
+//map["Topic Name"]=value1;
+//map["zookeeper.connect"]=value2;
+//map["bootstrap.servers"]=value3;
+//map["offsets.topic.num.partitions"]=value4;
+//map["offsets.topic.replication.factor"]=value5;
 map["messageName"]=value6;
-console.log("processId is "+processId);
-console.log("property1 is "+value1);
-console.log("property2 is "+value2);
-console.log("property3 is "+value3);
-console.log("property4 is "+value4);
-console.log("property5 is "+value5)
+map["connectionName"]=value7;
 console.log("property6 is "+value6);
 
 
@@ -456,7 +461,7 @@ map["filtervalue"]=value3;
             data: jQuery.param(map),
             success: function(data) {
                 if(data.Result == "OK") {
-                    alertBox("info","kafka properties added");
+                    alertBox("info","operator properties added");
                 }
                 else
                 alertBox("warning","Error occured");
@@ -468,11 +473,13 @@ map["filtervalue"]=value3;
 
 
 $scope.insertHdfsProp=function(processId){
-var value1=document.getElementById("hdfs path").value;
+var value1=document.getElementById("messageName").value;
 console.log("values are "+value1);
 console.log("processId is "+processId);
+var value7=document.getElementById("hdfsConnectionName").value;
 var map=new Object();
-map["hdfs_path"]=value1;
+map["messageName"]=value1;
+map["connectionName"]=value7;
     $.ajax({
             type: "POST",
             url: "/mdrest/properties/"+processId,

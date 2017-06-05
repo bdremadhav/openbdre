@@ -11,15 +11,15 @@
         <style>
         .label-icons {
                     margin: 0 auto;
-                    width: 45px;
-                    height: 45px;
+                    width: 15px;
+                    height: 15px;
                     background-size: 100% !important;
                     display: block;
                     background-repeat: no-repeat !important;
                     background-position: center !important;
                 }
                 .label-properties {
-                    background: url('../css/images/properties.png') no-repeat center;
+                    background: url('../css/images/subprocess-rarrow.png') no-repeat center;
                 }
 
                 .jtable-bottom-panel,.jtable-no-data-row{
@@ -55,6 +55,7 @@ var createJobResult;
 var requiredProperties;
 var sourceFlag;
 var created = 0;
+
 
 var getGenConfigMap = function(cfgGrp){
     var map = new Object();
@@ -120,8 +121,6 @@ wizard = $(document).ready(function() {
 			console.log(currentIndex + 'current ' + newIndex );
 			if(currentIndex == 0 && newIndex == 1) {
 			console.log(document.getElementById('fileFormat').elements[1].value);
-			      if(document.getElementById('fileFormat')!=null)
-			    buildForm(document.getElementById('fileFormat').elements[1].value);
 			}
 			return true;
 		},
@@ -129,7 +128,7 @@ wizard = $(document).ready(function() {
 			console.log(currentIndex + " " + priorIndex);
 			if(currentIndex == 1 && priorIndex == 0) {
 				{
-
+                    $('#rawTableColumnDetails').jtable('load');
 
 
 					$('#createjobs').on('click', function(e) {
@@ -150,6 +149,7 @@ wizard = $(document).ready(function() {
 										modal: true,
 										buttons: {
 											"Ok": function() {
+											    $('#Container').jtable('load');
 												$(this).dialog("close");
 											}
 										}
@@ -344,6 +344,7 @@ wizard = $(document).ready(function() {
                 var app = angular.module('myApp', []);
                 app.controller('myCtrl', function($scope) {
                     $scope.fileformats= getGenConfigMap('file_format');
+                    $scope.messageTypes={'ApacheLog':'ApacheLog','RouterLogs':'RouterLogs','Custom':'Custom'};
                     console.log($scope.fileformats);
                     $scope.formatMap=null;
                     $scope.busDomains = {};
@@ -381,7 +382,7 @@ wizard = $(document).ready(function() {
          var filetype = document.getElementById('fileformat').value;
          console.log("filetype is "+filetype);
        console.log("function call is happening ");
-       if(filetype == 'string:delimited')
+       if(filetype == 'delimited')
        document.getElementById('dilimiteddiv').style.display='block';
        else
        document.getElementById('dilimiteddiv').style.display='none';
@@ -518,35 +519,44 @@ wizard = $(document).ready(function() {
             <form class="form-horizontal" role="form" id="fileFormat">
 
 
-                                        <!-- btn-group -->
-                                        <div id="rawTablDetailsDB">
-                                        <div class="form-group" >
-                                            <label class="control-label col-sm-2" for="messageName">Message Name</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" class="form-control"  id="messageName" name="messageName" placeholder="message name" value="" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2"  for="fileformat"><spring:message code="dataload.page.file_format"/></label>
-                                            <div class="col-sm-10">
-                                                <select class="form-control" id="fileformat" name="fileformat" onchange="changeme()" ng-model="fileformat1" ng-options = "file as val.value for (file, val) in fileformats" >
-                                                    <option  value="">Select the option</option>
+                    <!-- btn-group -->
+                    <div id="rawTablDetailsDB">
+                    <div class="form-group" >
+                        <label class="control-label col-sm-2" for="messageName">Message Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control"  id="messageName" name="messageName" placeholder="message name" value="" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2"  for="fileformat"><spring:message code="dataload.page.file_format"/></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="fileformat" name="fileformat" onchange="changeme()" ng-model="fileformat1" ng-options = "file as val.value for (file, val) in fileformats" >
+                                <option  value="">Select the option</option>
+                            </select>
+                        </div>
+                    </div>
 
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div id="dilimiteddiv"class="form-group" style="display:none;" >
-                                        <label class="control-label col-sm-2" for="delimiter">Delimiter</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control"  id="delimiter" name="delimiter" placeholder="Delimiter" value="" required>
-                                        </div>
-                                    </div>
-                                        <div class="clearfix"></div>
-                                        </div>
+                  <div class="form-group">
+                    <label class="control-label col-sm-2"  for="fileformat">Message Template</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="messageType" name="messageType"  ng-model="messageType" ng-options = "file as val for (file, val) in messageTypes" >
+                            <option  value="">Select the option</option>
+                        </select>
+                    </div>
+                </div>
 
-                                        <!-- /btn-group -->
+                    <div id="dilimiteddiv"class="form-group" style="display:none;" >
+                    <label class="control-label col-sm-2" for="delimiter">Delimiter</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  id="delimiter" name="delimiter" placeholder="Delimiter" value="" required>
+                    </div>
+                </div>
+                    <div class="clearfix"></div>
+                    </div>
 
-                                    </form>
+                    <!-- /btn-group -->
+
+                </form>
 
 
             			</section>
@@ -573,7 +583,33 @@ wizard = $(document).ready(function() {
 		edit: false,
 		actions: {
 			listAction: function(postData, jtParams) {
-				return jsonObj;
+			var messageType = document.getElementById("messageType").value;
+             console.log("message type is "+messageType);
+             if(messageType=="")
+                messageType="NOTHING";
+                return $.Deferred(function ($dfd) {
+                $.ajax({
+                        type: "POST",
+                        url: "/mdrest/genconfig/"+messageType+"/?required=2",
+                        dataType: 'json',
+                        async: false,
+                        success: function(data) {
+                                   console.log(data);
+                                    if(data.Result == "OK") {
+                                      $dfd.resolve(data);
+                                  }
+                                  else
+                                  {
+                                   $dfd.resolve(data);
+                                  }
+
+                        },
+                        error : function(data){
+                            console.log(data);
+                        }
+
+                    });
+                });
 			},
 			createAction: function(postData) {
                 console.log(postData);
@@ -662,7 +698,7 @@ wizard = $(document).ready(function() {
 
 
 
-	$('#rawTableColumnDetails').jtable('load');
+
 
 });
 

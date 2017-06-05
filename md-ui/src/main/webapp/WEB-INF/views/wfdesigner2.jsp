@@ -330,45 +330,20 @@
 
 
                                               <form class="form-horizontal" role="form" ng-if="genConfig.type == 'kafka'">
-                                              		  <div class="form-group">
-                                              			  <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">Topic Name</label>
-                                              			  <div class="col-sm-10">
-                                              				  <input type="text" class="form-control" id="Topic Name" placeholder="Topic Name" >
-                                              			  </div>
-                                              		  </div>
-                                              		  <div class="form-group">
-                                              			  <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">zookeper host</label>
-                                              			  <div class="col-sm-10">
-                                              				  <input type="text" class="form-control" id="zookeeper.connect" placeholder="zookeper host" >
-                                              			  </div>
-                                              		  </div>
-
-                                              			<div class="form-group">
-                                              			  <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">kafka brokers</label>
-                                              			  <div class="col-sm-10">
-                                              				  <input type="text" class="form-control" id="bootstrap.servers" placeholder="kafka brokers list" >
-                                              			  </div>
-                                              		  </div>
-                                              		  <div class="form-group">
-                                              			  <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">Partitions</label>
-                                              			  <div class="col-sm-10">
-                                              				  <input type="text" class="form-control" id="offsets.topic.num.partitions" placeholder="Partitions" >
-                                              			  </div>
-                                              		  </div>
 
                                                       <div class="form-group">
-                                                          <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">Replication</label>
-                                                          <div class="col-sm-10">
-                                                              <input type="text" class="form-control" id="offsets.topic.replication.factor" placeholder="Replication" >
-                                                          </div>
-                                                      </div>
-
-                                                      <div class="form-group">
-                                                          <label for="workflowtype">Message Name</label>
-                                                          <select class="form-control" id="messageName">
-                                                              <option ng-repeat="message in newMessagesList" id="{{$index}}" value="{{ message.Value }}">{{ message.DisplayText }}</option>
+                                                          <label for="connectionName">Connection Name</label>
+                                                          <select class="form-control" id="connectionName">
+                                                              <option ng-repeat="connection in connectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
                                                           </select>
                                                       </div>
+
+                                                       <div class="form-group">
+                                                            <label for="messageName">Message Name</label>
+                                                            <select class="form-control" id="messageName">
+                                                                <option ng-repeat="message in newMessagesList" id="{{$index}}" value="{{ message.Value }}">{{ message.DisplayText }}</option>
+                                                            </select>
+                                                        </div>
 
 
 
@@ -406,12 +381,19 @@
 
                                             <form class="form-horizontal" role="form" ng-if="genConfig.type == 'hdfs'">
 
+                                                <div class="form-group">
+                                                    <label for="hdfsConnectionName">Connection Name</label>
+                                                    <select class="form-control" id="hdfsConnectionName">
+                                                        <option ng-repeat="connection in connectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
+                                                    </select>
+                                                </div>
+
                                                   <div class="form-group">
-                                                   <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey">Hdfs Path</label>
-                                                   <div class="col-sm-10">
-                                                       <input type="text" class="form-control" id="hdfs path" placeholder="hdfs path" required>
+                                                       <label for="messageName">Message Name</label>
+                                                       <select class="form-control" id="messageName">
+                                                           <option ng-repeat="message in newMessagesList" id="{{$index}}" value="{{ message.Value }}">{{ message.DisplayText }}</option>
+                                                       </select>
                                                    </div>
-                                               </div>
                                                     <div class="clearfix"></div>
                                                     <button type="submit" ng-click="insertHdfsProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Submit HDFS properties</button>
                                                 </form>
@@ -621,7 +603,7 @@
 									<div class="panel-body" style="padding: 0;">
                                         <form role="form">
                                             <div class="form-group">
-                                                <label for="processName"><spring:message code="wfdesigner.page.process_name"/></label>
+                                                <label for="processName">Workflow Name</label>
                                                 <input type="text" class="form-control" id="processname" required>
                                             </div>
                                             <div class="form-group">

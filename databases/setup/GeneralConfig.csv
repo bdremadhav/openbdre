@@ -558,6 +558,11 @@
 'file_format', 'xml', 'XML','XML file' , 1, 'xml', 'text' , 1
 'file_format', 'json', 'JSON','JSON file' , 1, 'json', 'text' , 1
 'file_format', 'regex', 'REGEX','REGEX file' , 1, 'regex', 'text' , 1
+
+'ApacheLog', 'ipAddress', 'ipAddress','ipAddress' , 1, 'ipAddress', 'String' , 1
+'ApacheLog', 'clientIdentd', 'clientIdentd','clientIdentd' , 1, 'clientIdentd', 'String' , 1
+'ApacheLog', 'userID', 'userID','userID' , 1, 'userID', 'String' , 1
+
 'delimited', 'serdeClass', 'Serde Class','serde class to be used' , 1, 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe', 'text' , 1
 'delimited', 'inputFormat', 'Input Format','input format to be used' , 1, 'org.apache.hadoop.mapred.TextInputFormat', 'text' , 1
 'delimited', 'outputFormat', 'Output Format','output format to be used' , 1, 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat', 'text' , 1
