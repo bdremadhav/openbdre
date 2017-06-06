@@ -84,15 +84,11 @@ ul{
   .btn-primary1 {
       background-color: #23C9A4 !important;
       color: #404040 !important;
-      padding: 0.25em 3.05em !important;
       border-radius: 4px !important;
       border-color: transparent;
       font-size: 18px;
-  }
+  }   left: 420px;
 
- #buttondiv li + li{
-      margin-left:20px;
-  }
 
 }
 
@@ -164,7 +160,7 @@ ul{
 <script>
 function source()
       {
-       console.log("function call is happening ");
+       console.log("function call is happening in source");
        document.getElementById('source-tab').style.display='block';
        document.getElementById('emitter-tab').style.display='none';
        document.getElementById('persistent-stores-tab').style.display='none';
@@ -173,7 +169,7 @@ function source()
 
       function emitter()
             {
-             console.log("function call is happening ");
+             console.log("function call is happening in emitter");
              document.getElementById('source-tab').style.display='none';
              document.getElementById('emitter-tab').style.display='block';
              document.getElementById('persistent-stores-tab').style.display='none';
@@ -183,39 +179,38 @@ function source()
 
        function persistance()
           {
-           console.log("function call is happening ");
+           console.log("function call is happening in persistance");
            document.getElementById('source-tab').style.display='none';
            document.getElementById('emitter-tab').style.display='none';
            document.getElementById('persistent-stores-tab').style.display='block';
            document.getElementById('saved-connections').style.display='none';
           }
 
-        function saved()
+        function create()
             {
-             console.log("function call is happening ");
-             document.getElementById('source-tab').style.display='none';
-             document.getElementById('emitter-tab').style.display='none';
-             document.getElementById('persistent-stores-tab').style.display='none';
-             document.getElementById('saved-connections').style.display='block';
+            console.log(window.location.href);
+            var str=window.location.href;
+            if(str.includes("source")==true)
+             source();
+             if(str.includes("emitter")==true)
+             emitter();
+             if(str.includes("persistance")==true)
+              persistance();
             }
 </script>
 </head>
 <body ng-app="myApp" ng-controller="myCtrl">
 
+
+ <button type="button" class=" btn-primary1" id="createbutton" style="margin-left:1020px;margin-bottom: 5px;"onclick="create()">Create New Connection</button>
    <div id="tabs" style="background:transparent" width="1000px">
-     <ul id="buttondiv">
-       <li><button type="button" class=" btn-primary1" onclick="source()">Source Configuration</button></li>
-       <li><button type="button" class=" btn-primary1" onclick="emitter()">Emitter Configuration</button></li>
-       <li><button type="button"  class=" btn-primary1" onclick="persistance()">PersistentStore Configuration</button></li>
-       <li><button type="button" class=" btn-primary1" onclick="saved()">Saved Configuration</button></li>
-     </ul>
-     <div id="source-tab">
+     <div id="source-tab" style="display:none;">
 
-            <form class="form-horizontal" role="form" id="sourceConnectionForm">
 
-                    <div id="sourceConnectionFields" class="form-group">
-                        <label class="control-label col-sm-3">Source Configuration Type</label>
-                        <div id="dropdownSource" class="btn-group" >
+
+                    <div id="sourceConnectionFields">
+                        <label style="left: 125px;" class="control-label col-sm-3">Source Configuration Type</label>
+                        <div id="dropdownSource" class="btn-group" style="left: 145px;" >
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="srcDropdown">
                                 <span>Select Source</span><span class="caret"></span>
                             </button>
@@ -228,7 +223,7 @@ function source()
                       </div>
 
 
-
+                    <form class="form-horizontal" role="form" id="sourceConnectionForm">
                     <div class="form-group">
                         <label class="control-label col-sm-3">Source Connection Name</label>
                         <div class="col-sm-9">
@@ -237,7 +232,7 @@ function source()
                     </div>
 
 
-                    <div class="clearfix"></div>
+
 
           </form>
 
@@ -246,36 +241,31 @@ function source()
 
       <div id="emitter-tab" style="display:none;">
              <section >
-             <form class="form-horizontal" role="form" id="emitterConnectionForm">
-                 <div id="emitterConnectionDetails">
-                     <!-- btn-group -->
-                     <div id="emitterConnectionFields">
-                     <div class="form-group">
-                         <label class="control-label col-sm-3">Emitter Configuration Type</label>
-                         <div id="dropdownEmitter">
-                         <div class="btn-group" >
-                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="emitterDropdown">
-                                 <span>Select Emitter</span><span class="caret"></span>
-                             </button>
-                             <ul class="dropdown-menu" aria-labelledby="emitterDropdown">
-                                 <li>
-                                     <a href="#"></a>
-                                 </li>
-                             </ul>
-                          </div>
-                        </div>
-                     </div>
+
+                <div id="emitterConnectionFields">
+                <label style="left: 125px;" class="control-label col-sm-3">Emitter Configuration Type</label>
+                <div id="dropdownEmitter" class="btn-group" style="left: 145px;" >
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="emitterDropdown">
+                        <span>Select Source</span><span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="emitterDropdown">
+                        <li>
+                            <a href="#"></a>
+                        </li>
+                    </ul>
+                 </div>
+              </div>
 
 
+
+
+                    <form class="form-horizontal" role="form" id="emitterConnectionForm">
                      <div class="form-group">
                          <label class="control-label col-sm-3">Emitter Configuration Name</label>
                          <div class="col-sm-9">
                              <input type="text" class="form-control" name="emitterConnectionName">
                          </div>
                      </div>
-
-
-                     <div class="clearfix"></div>
 
                  </div>
                      <!-- /btn-group -->
@@ -287,36 +277,32 @@ function source()
 
          <div id="persistent-stores-tab" style="display:none;">
                <section >
-               <form class="form-horizontal" role="form" id="persistentStoresConnectionForm">
-                   <div id="persistentStoresConnectionDetails">
-                       <!-- btn-group -->
-                       <div id="persistentStoresConnectionFields">
-                       <div class="form-group">
-                           <label class="control-label col-sm-3">PersistentStore Configuration Type</label>
-                           <div id="dropdownPersistentStores">
-                           <div class="btn-group" >
-                               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="persistentStoresDropdown">
-                                   <span>Select PersistentStore</span><span class="caret"></span>
-                               </button>
-                               <ul class="dropdown-menu" aria-labelledby="persistentStoresDropdown">
-                                   <li>
-                                       <a href="#"></a>
-                                   </li>
-                               </ul>
-                            </div>
-                          </div>
-                       </div>
 
 
+           <div id="persistentStoresConnectionDetails">
+                <label style="left: 125px;" class="control-label col-sm-3">PersistentStore Configuration Type</label>
+                <div id="dropdownPersistentStores" class="btn-group" style="left: 145px;" >
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="persistentStoresDropdown">
+                        <span>Select Source</span><span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="persistentStoresDropdown">
+                        <li>
+                            <a href="#"></a>
+                        </li>
+                    </ul>
+                 </div>
+              </div>
+
+
+
+
+                       <form class="form-horizontal" role="form" id="persistentStoresConnectionForm">
                        <div class="form-group">
                            <label class="control-label col-sm-3">PersistentStore Configuration Name</label>
                            <div class="col-sm-9">
                                <input type="text" class="form-control" name="persistentStoresConnectionName">
                            </div>
                        </div>
-
-
-                       <div class="clearfix"></div>
 
                    </div>
                        <!-- /btn-group -->
@@ -325,7 +311,7 @@ function source()
            </section>
          </div>
 
-      <div id="saved-connections" style="display:none;">
+      <div id="saved-connections">
         <section style="width:100%;text-align:center;">
         <div id="Container"></div>
         </section>

@@ -160,6 +160,9 @@
 				.dropdown-toggle {
 					padding-top: 9px !important;
 				}
+				.dropdown-menu {
+				position:initial;
+				}
 			</style>
 		</head>
 
@@ -251,8 +254,22 @@
                             $scope.menu = [{
                                                             label: "Configuration Management",
                                                             collapse: "1",
-                                                            url: "connections.page",
-                                                            children: []
+                                                            children: [{
+                                                               label: "Source Management",
+                                                               collapse: "1",
+                                                               url: "connections.page?type=source",
+                                                               children: []
+                                        }, {
+                                                               label: "Emitter Management",
+                                                               collapse: "1",
+                                                               url: "connections.page?type=emitter",
+                                                               children: []
+                                        }, {
+                                                               label: "Persistence Management",
+                                                               collapse: "1",
+                                                              url: "connections.page?type=persistance",
+                                                               children: []
+                                        }]
                                         },
                                            {
 
