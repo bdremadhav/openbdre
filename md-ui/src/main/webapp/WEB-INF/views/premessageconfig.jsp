@@ -32,42 +32,17 @@
                 }
 
 
+            #connectionDetails .form-group {
+                 width: 100%;
+                 /* padding: 0 10% 15px 10%; */
+             }
 
-               /* The Modal (background) */
-               .modal {
-                   display: none; /* Hidden by default */
-                   position: fixed; /* Stay in place */
-                   z-index: 1; /* Sit on top */
-                   padding-top: 100px; /* Location of the box */
-                   left: 0;
-                   top: 0;
-                   width: 100%; /* Full width */
-                   height: 100%; /* Full height */
-                   overflow: auto; /* Enable scroll if needed */
-                   background-color: rgb(0,0,0); /* Fallback color */
-                   background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
-               }
 
-               /* Modal Content */
-               .col-md-8 {
-                   left: 240px;
-               }
-
-               /* The Close Button */
-               .close {
-                   color: #aaaaaa;
-                   float: right;
-                   font-size: 28px;
-                   font-weight: bold;
-               }
-
-               .close:hover,
-               .close:focus {
-                   color: #000;
-                   text-decoration: none;
-                   cursor: pointer;
-               }
-
+             .form-group label {
+                 /* width: 75%; */
+                 float: none;
+                 text-align: left !important;
+             }
 
         </style>
 		<script src="../js/jquery.min.js" type="text/javascript" ></script>
@@ -181,7 +156,6 @@ wizard = $(document).ready(function() {
 							success: function(data) {
 								if(data.Result == "OK") {
 									created = 1;
-									document.getElementById('myModal').style.display='none';
 									$("#div-dialog-warning").dialog({
 										title: "",
 										resizable: false,
@@ -191,7 +165,7 @@ wizard = $(document).ready(function() {
 											"Ok": function() {
 											    $('#Container').jtable('load');
 												$(this).dialog("close");
-												location.href = '<c:url value="/pages/streamingmessage.page"/>';
+												location.href = '<c:url value="/pages/premessageconfig.page"/>';
 											}
 										}
 									}).html('<p><span class="jtable-confirm-message">Message successfully created </span></p>');
@@ -207,7 +181,7 @@ wizard = $(document).ready(function() {
 		},
 		onFinished: function(event, currentIndex) {
 			if(created == 1) {
-				location.href = '<c:url value="/pages/streamingmessage.page"/>';
+				location.href = '<c:url value="/pages/premessageconfig.page"/>';
 			} else {
 				$("#div-dialog-warning").dialog({
 					title: "",
@@ -219,11 +193,11 @@ wizard = $(document).ready(function() {
 							$(this).dialog("close");
 						}
 					}
-				}).html('<p><span class="jtable-confirm-message"><spring:message code="dataload.page.failed_msg"/></span></p>');
+				}).html('<p><span class="jtable-confirm-message">Message is not created</span></p>');
 			}
 		},
 		onCanceled: function(event) {
-			location.href = '<c:url value="/pages/streamingmessage.page"/>';
+			location.href = '<c:url value="/pages/premessageconfig.page"/>';
 		}
 	});
 });
@@ -549,17 +523,18 @@ wizard = $(document).ready(function() {
 <body>
 
  <button type="button" id="myBtn" class=" btn-primary" id="createbutton" style="margin-left:955px;margin-bottom: 5px;">Create New Message</button>
-<div class='col-md-8' id="messageDetails">
+<div class='col-md-8' id="messageDetails" style="left: 240px;">
 <section style="width:100%;text-align:center;">
 	<div id="Container"></div>
     </section>
 </div>
 
-<div ng-app="app" id="preMessageDetails" ng-controller="myCtrl" style="display:none;">
-
+ <div ng-app="app" id="preMessageDetails" ng-controller="myCtrl" style="display:none;">
+<div class='col-md-3'>
+ <form  role="form" id="connectionDetails">
   <div class="form-group">
-    <label class="control-label col-sm-2"  for="connectionName">Connection Configuration</label>
-    <div class="col-sm-7">
+    <label for="connectionName">Connection Configuration</label>
+    <div>
         <select class="form-control" id="connectionName" name="connectionName"  ng-change="change()" ng-model="connectionName" ng-options = "val.Value as val.Value for (file, val) in connectionsList" >
             <option  value="">Select the option</option>
         </select>
@@ -568,29 +543,17 @@ wizard = $(document).ready(function() {
 
 
 <div class="form-group" id="topic" ng-show="IsVisible">
-    <label class="control-label col-sm-2"  for="connectionName">Topic</label>
-    <div class="col-sm-7">
+    <label   for="connectionName">Topic</label>
+    <div >
         <select class="form-control" id="topicName" name="topicName"  ng-change="showPopup()" ng-model="topicName" ng-options = "val.Value as val.Value for (file, val) in topicList" >
             <option  value="">Select the option</option>
         </select>
     </div>
 </div>
-
-
-
-
-
-
-<!-- The Modal -->
-<div id="myModal" class="modal">
-
-  <!-- Modal content -->
-  <div class="col-md-8 modal-content">
-    <span class="close">&times;</span>
-
+</form>
 </div>
  <div class='col-md-8'>
-	<div  ng-app="myApp" id="bdre-data-load" ng-controller="myCtrl">
+	<div id="bdre-data-load">
 			<h3>Message details</h3>
             			<section>
             <form class="form-horizontal" role="form" id="fileFormat">
@@ -598,6 +561,14 @@ wizard = $(document).ready(function() {
 
                     <!-- btn-group -->
                     <div id="rawTablDetailsDB">
+
+                    <div class="form-group" >
+                    <label class="control-label col-sm-2" for="topicNameInForm">Topic Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"  id="topicNameInForm" ng-model="topicName" readonly>
+                    </div>
+                </div>
+
                     <div class="form-group" >
                         <label class="control-label col-sm-2" for="messageName">Message Name</label>
                         <div class="col-sm-10">
@@ -613,8 +584,20 @@ wizard = $(document).ready(function() {
                         </div>
                     </div>
 
-                  <div class="form-group">
-                    <label class="control-label col-sm-2"  for="fileformat">Message Template</label>
+                    <div class="form-group">
+                   <label class="control-label col-sm-2" for="isDefaultTemplate">Use Default Message</label>
+                      <div class="col-sm-10">
+                      <select class="form-control" id="isDefaultTemplate" name="isDefaultTemplate" onchange="isDefault()">
+                        <option  value="No" selected>No</option>
+                        <option  value="Yes">Yes</option>
+                        </select>
+                      </div>
+                    </div>
+
+
+
+                  <div class="form-group" style="display:none;" id="defaultMessage">
+                    <label class="control-label col-sm-2"  for="fileformat" >Message Template</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="messageType" name="messageType"  ng-model="messageType" ng-options = "file as val for (file, val) in messageTypes" >
                             <option  value="">Select the option</option>
@@ -651,7 +634,6 @@ wizard = $(document).ready(function() {
 		</div>
 
  </div>
-</div>
 <script>
                 var app = angular.module('app', []);
                    app.controller('myCtrl', function($scope) {
@@ -701,7 +683,7 @@ wizard = $(document).ready(function() {
                      $scope.showPopup=function()
                         {
                         console.log("value of topicName is "+$scope.topicName);
-                        location.href = '<c:url value="/pages/streamingmessage.page?topicName="/>' + $scope.topicName;
+                        $('#topicNameInForm').val($scope.topicName);
                         }
                 });
 
@@ -709,37 +691,25 @@ wizard = $(document).ready(function() {
         </script>
 
 <script>
-// Get the modal
-var modal = document.getElementById('myModal');
-
-// Get the button that opens the modal
 var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal
 btn.onclick = function() {
+    document.getElementById('myBtn').style.display='none';
     document.getElementById('messageDetails').style.display='none';
     document.getElementById('preMessageDetails').style.display='block';
 
 }
-var messageBox=document.getElementById('messageDetails');
-messageBox.onclick=function() {
-if (window.location.search.match("[?&]IsDlg=1"))
-       console.log("popup came");
-}
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
+
+function isDefault()
+{
+console.log("value is  "+document.getElementById('isDefaultTemplate').value);
+if(document.getElementById('isDefaultTemplate').value == "Yes")
+document.getElementById('defaultMessage').style.display='block';
+else
+document.getElementById('defaultMessage').style.display='none';
 }
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
 </script>
 		<script type="text/javascript">
 	$(document).ready(function () {

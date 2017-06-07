@@ -273,7 +273,7 @@
                                         },
                                            {
 
-                                                            label: "Message Configuration",
+                                                            label: "Messages",
                            									collapse: "1",
                            									url: "premessageconfig.page",
                            									children: []

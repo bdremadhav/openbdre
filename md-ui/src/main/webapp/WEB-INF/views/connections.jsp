@@ -526,7 +526,7 @@ function source()
                                             return $.Deferred(function($dfd) {
                                                 console.log(item);
                                                 $.ajax({
-                                                    url: '/mdrest/connections/getonerecord/' + item.record.connectionName+'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
+                                                    url: '/mdrest/connections/list/' + item.record.connectionName+'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
                                                     type: 'GET',
                                                     data: item,
                                                     dataType: 'json',

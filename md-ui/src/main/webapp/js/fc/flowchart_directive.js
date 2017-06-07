@@ -464,12 +464,13 @@ angular.module('flowChart', ['dragging'] )
                      if(sourcePid<0)sourcePid=-sourcePid;
                      var dataRecord = processAC('/mdrest/process/', 'GET', sourcePid);
                      if (dataRecord) {
-                     	if(dataRecord.nextProcessIds=='0'){
+                     	if(dataRecord.nextProcessIds==dataRecord.parentProcessId){
                      		dataRecord.nextProcessIds=destPid;
                      	}
                      	else{
                      		dataRecord.nextProcessIds = dataRecord.nextProcessIds + "," + destPid;
                      	}
+                     	console.log("nextprocessid is "+dataRecord.nextProcessIds);
                      	//TS fields cause exception due to time format
                      	delete dataRecord["addTS"];
                      	delete dataRecord["editTS"];

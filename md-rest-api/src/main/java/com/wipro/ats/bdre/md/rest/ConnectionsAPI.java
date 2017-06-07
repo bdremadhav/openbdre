@@ -1,16 +1,12 @@
 package com.wipro.ats.bdre.md.rest;
 
 import com.wipro.ats.bdre.exception.MetadataException;
-import com.wipro.ats.bdre.md.beans.table.Process;
-import com.wipro.ats.bdre.md.beans.table.Properties;
 import com.wipro.ats.bdre.md.dao.ConnectionPropertiesDAO;
 import com.wipro.ats.bdre.md.dao.ConnectionsDAO;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionProperties;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionPropertiesId;
 import com.wipro.ats.bdre.md.dao.jpa.Connections;
-import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import com.wipro.ats.bdre.md.rest.util.Dao2TableUtil;
-import com.wipro.ats.bdre.md.rest.util.DateConverter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -162,7 +158,7 @@ public class ConnectionsAPI {
     }
 
 
-    @RequestMapping(value = {"/{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/list/{id}"}, method = RequestMethod.GET)
     @ResponseBody
     public RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
                             @RequestParam(value = "size", defaultValue = "10") int pageSize,
