@@ -565,9 +565,10 @@ wizard = $(document).ready(function() {
                     <div class="form-group" >
                     <label class="control-label col-sm-2" for="topicNameInForm">Topic Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control"  id="topicNameInForm" ng-model="topicName" readonly>
+                        <input type="text" class="form-control"  id="topicNameInForm" name="topicNameInForm" ng-model="topicName" readonly>
                     </div>
                 </div>
+
 
                     <div class="form-group" >
                         <label class="control-label col-sm-2" for="messageName">Message Name</label>
@@ -605,12 +606,21 @@ wizard = $(document).ready(function() {
                     </div>
                 </div>
 
-                    <div id="dilimiteddiv"class="form-group" style="display:none;" >
+                    <div class="form-group" id="dilimiteddiv" style="display:none;" >
                     <label class="control-label col-sm-2" for="delimiter">Delimiter</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control"  id="delimiter" name="delimiter" placeholder="Delimiter" value="" required>
                     </div>
                 </div>
+
+
+                  <div class="form-group" style="display:none;">
+                        <label class="control-label col-sm-2" for="connectionNameInform">Connection Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control"  id="connectionNameInform" name="connectionNameInform" readonly>
+                        </div>
+                    </div>
+
                     <div class="clearfix"></div>
                     </div>
 
@@ -684,6 +694,7 @@ wizard = $(document).ready(function() {
                         {
                         console.log("value of topicName is "+$scope.topicName);
                         $('#topicNameInForm').val($scope.topicName);
+                        $('#connectionNameInform').val($scope.connectionName);
                         }
                 });
 
