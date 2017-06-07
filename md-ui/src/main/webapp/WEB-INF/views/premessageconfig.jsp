@@ -31,9 +31,44 @@
                 right:0;
                 }
 
-           .col-md-8 {
-               left: 240px;
-           }
+
+
+               /* The Modal (background) */
+               .modal {
+                   display: none; /* Hidden by default */
+                   position: fixed; /* Stay in place */
+                   z-index: 1; /* Sit on top */
+                   padding-top: 100px; /* Location of the box */
+                   left: 0;
+                   top: 0;
+                   width: 100%; /* Full width */
+                   height: 100%; /* Full height */
+                   overflow: auto; /* Enable scroll if needed */
+                   background-color: rgb(0,0,0); /* Fallback color */
+                   background-color: rgba(0,0,0,0.1); /* Black w/ opacity */
+               }
+
+               /* Modal Content */
+               .col-md-8 {
+                   left: 240px;
+               }
+
+               /* The Close Button */
+               .close {
+                   color: #aaaaaa;
+                   float: right;
+                   font-size: 28px;
+                   font-weight: bold;
+               }
+
+               .close:hover,
+               .close:focus {
+                   color: #000;
+                   text-decoration: none;
+                   cursor: pointer;
+               }
+
+
         </style>
 		<script src="../js/jquery.min.js" type="text/javascript" ></script>
 		<link href="../css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
@@ -146,6 +181,7 @@ wizard = $(document).ready(function() {
 							success: function(data) {
 								if(data.Result == "OK") {
 									created = 1;
+									document.getElementById('myModal').style.display='none';
 									$("#div-dialog-warning").dialog({
 										title: "",
 										resizable: false,
@@ -155,7 +191,7 @@ wizard = $(document).ready(function() {
 											"Ok": function() {
 											    $('#Container').jtable('load');
 												$(this).dialog("close");
-												location.href = '<c:url value="/pages/premessageconfig.page"/>';
+												location.href = '<c:url value="/pages/streamingmessage.page"/>';
 											}
 										}
 									}).html('<p><span class="jtable-confirm-message">Message successfully created </span></p>');
@@ -171,7 +207,7 @@ wizard = $(document).ready(function() {
 		},
 		onFinished: function(event, currentIndex) {
 			if(created == 1) {
-				location.href = '<c:url value="/pages/premessageconfig.page"/>';
+				location.href = '<c:url value="/pages/streamingmessage.page"/>';
 			} else {
 				$("#div-dialog-warning").dialog({
 					title: "",
@@ -187,7 +223,7 @@ wizard = $(document).ready(function() {
 			}
 		},
 		onCanceled: function(event) {
-			location.href = '<c:url value="/pages/premessageconfig.page"/>';
+			location.href = '<c:url value="/pages/streamingmessage.page"/>';
 		}
 	});
 });
@@ -345,7 +381,42 @@ wizard = $(document).ready(function() {
                                     });
                                 });
                                 </script>
+		<script>
+                var app = angular.module('myApp', []);
+                app.controller('myCtrl', function($scope) {
+                    $scope.fileformats= getGenConfigMap('file_format');
+                    $scope.messageTypes={'ApacheLog':'ApacheLog','RouterLogs':'RouterLogs','Custom':'Custom'};
+                    console.log($scope.fileformats);
+                    $scope.formatMap=null;
+                    $scope.busDomains = {};
+                    $.ajax({
+                    url: '/mdrest/busdomain/options/',
+                        type: 'POST',
+                        dataType: 'json',
+                        async: false,
+                        success: function (data) {
+                            $scope.busDomains = data;
+                        },
+                        error: function () {
+                            alert('danger');
+                        }
+                    });
 
+                    $scope.workflowTypes = {};
+                    $.ajax({
+                    url: '/mdrest/workflowtype/optionslist',
+                        type: 'POST',
+                        dataType: 'json',
+                        async: false,
+                        success: function (data) {
+                            $scope.workflowTypes = data;
+                        },
+                        error: function () {
+                            alert('danger');
+                        }
+                    });
+                });
+        </script>
      <script>
       function changeme()
       {
@@ -476,60 +547,50 @@ wizard = $(document).ready(function() {
 
 	</head>
 <body>
- <script>
-                var app = angular.module('myApp', []);
-                   app.controller('myCtrl', function($scope,$window) {
-                    $scope.fileformats= getGenConfigMap('file_format');
-                    $scope.messageTypes={'ApacheLog':'ApacheLog','RouterLogs':'RouterLogs','Custom':'Custom'};
-                    console.log($scope.fileformats);
-                    $scope.formatMap=null;
-                    $scope.busDomains = {};
-                    $scope.connectionsList={};
-                   $.ajax({
-                       url: '/mdrest/connections/optionslist/source',
-                           type: 'POST',
-                           dataType: 'json',
-                           async: false,
-                           success: function (data) {
-                                console.log("connections list is "+data.Options);
-                               $scope.connectionsList = data.Options;
-                           },
-                           error: function () {
-                               alert('danger');
-                           }
-                       });
 
-                    $scope.change=function()
-                    {
-                    $scope.connectionName=$window.id;
-                    console.log("function change is being called");
-                    console.log("value of connectionName is "+$scope.connectionName);
-                    $.ajax({
-                       url: '/mdrest/connections/'+$scope.connectionName+"/"+"topicName",
-                           type: 'GET',
-                           dataType: 'json',
-                           async: false,
-                           success: function (data) {
+ <button type="button" id="myBtn" class=" btn-primary" id="createbutton" style="margin-left:955px;margin-bottom: 5px;">Create New Message</button>
+<div class='col-md-8' id="messageDetails">
+<section style="width:100%;text-align:center;">
+	<div id="Container"></div>
+    </section>
+</div>
 
-                                $scope.topicList = data.Options;
-                                console.log("topic list is "+ $scope.topicList);
-                           },
-                           error: function () {
-                               alert('danger');
-                               $scope.topicList="";
-                           }
-                       });
-                       $("#topicid").show();
-                    }
+<div ng-app="app" id="preMessageDetails" ng-controller="myCtrl" style="display:none;">
 
-                });
+  <div class="form-group">
+    <label class="control-label col-sm-2"  for="connectionName">Connection Configuration</label>
+    <div class="col-sm-7">
+        <select class="form-control" id="connectionName" name="connectionName"  ng-change="change()" ng-model="connectionName" ng-options = "val.Value as val.Value for (file, val) in connectionsList" >
+            <option  value="">Select the option</option>
+        </select>
+    </div>
+</div>
 
 
-        </script>
+<div class="form-group" id="topic" ng-show="IsVisible">
+    <label class="control-label col-sm-2"  for="connectionName">Topic</label>
+    <div class="col-sm-7">
+        <select class="form-control" id="topicName" name="topicName"  ng-change="showPopup()" ng-model="topicName" ng-options = "val.Value as val.Value for (file, val) in topicList" >
+            <option  value="">Select the option</option>
+        </select>
+    </div>
+</div>
 
+
+
+
+
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="col-md-8 modal-content">
+    <span class="close">&times;</span>
+
+</div>
  <div class='col-md-8'>
 	<div  ng-app="myApp" id="bdre-data-load" ng-controller="myCtrl">
-
 			<h3>Message details</h3>
             			<section>
             <form class="form-horizontal" role="form" id="fileFormat">
@@ -537,15 +598,6 @@ wizard = $(document).ready(function() {
 
                     <!-- btn-group -->
                     <div id="rawTablDetailsDB">
-
-                    <div class="form-group" >
-                    <label class="control-label col-sm-2" for="topicName">Topic Name</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control"  id="topicName" name="topicName" placeholder="topicName" value="${param.topicName}" readonly>
-                    </div>
-                </div>
-
-
                     <div class="form-group" >
                         <label class="control-label col-sm-2" for="messageName">Message Name</label>
                         <div class="col-sm-10">
@@ -592,26 +644,103 @@ wizard = $(document).ready(function() {
                 <button id="createjobs" type="button" class="btn btn-primary btn-lg">Create Message</button>
             </div>
 			    </section>
-
+		</div>
+        </div>
 		<div style="display:none" id="div-dialog-warning">
 			<p><span class="ui-icon ui-icon-alert" style="float:left;"></span></p>
 		</div>
 
  </div>
+</div>
+<script>
+                var app = angular.module('app', []);
+                   app.controller('myCtrl', function($scope) {
+                    $scope.fileformats= getGenConfigMap('file_format');
+                    $scope.messageTypes={'ApacheLog':'ApacheLog','RouterLogs':'RouterLogs','Custom':'Custom'};
+                    console.log($scope.fileformats);
+                    $scope.formatMap=null;
+                    $scope.busDomains = {};
+                    $scope.connectionsList={};
+                    $scope.IsVisible=false;
+                    $scope.topicList={};
+                   $.ajax({
+                       url: '/mdrest/connections/optionslist/source',
+                           type: 'POST',
+                           dataType: 'json',
+                           async: false,
+                           success: function (data) {
+                               $scope.connectionsList = data.Options;
+                           },
+                           error: function () {
+                               alert('danger');
+                           }
+                       });
 
- <script>
- var id="";
- function change()
- {
-    id=document.getElementById("connectionId").value;
-    console.log("id is "+id);
-   angular.element(document.getElementById('bdre-data-load')).scope().change('');
- }
+                    $scope.change=function()
+                    {
+                    console.log("function change is being called");
+                    console.log("value of connectionName is "+$scope.connectionName);
+                    $.ajax({
+                       url: '/mdrest/connections/'+$scope.connectionName+"/"+"topicName",
+                           type: 'GET',
+                           dataType: 'json',
+                           async: false,
+                           success: function (data) {
+                                console.log("topic list is "+data.Options);
+                                $scope.topicList = data.Options;
+                           },
+                           error: function () {
+                               alert('danger');
+                           }
+                       });
 
- </script>
+                    $scope.IsVisible=true;
+                    }
 
 
+                     $scope.showPopup=function()
+                        {
+                        console.log("value of topicName is "+$scope.topicName);
+                        location.href = '<c:url value="/pages/streamingmessage.page?topicName="/>' + $scope.topicName;
+                        }
+                });
 
+
+        </script>
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    document.getElementById('messageDetails').style.display='none';
+    document.getElementById('preMessageDetails').style.display='block';
+
+}
+var messageBox=document.getElementById('messageDetails');
+messageBox.onclick=function() {
+if (window.location.search.match("[?&]IsDlg=1"))
+       console.log("popup came");
+}
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 		<script type="text/javascript">
 	$(document).ready(function () {
 	$('#rawTableColumnDetails').jtable({

@@ -142,4 +142,14 @@ public class ConnectionPropertiesDAO {
         return size;
     }
 
+    public ConnectionProperties getConnectionsById(ConnectionPropertiesId connectionPropertiesId) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        ConnectionProperties connectionProperties = (ConnectionProperties) session.get(ConnectionProperties.class, connectionPropertiesId);
+        session.getTransaction().commit();
+        session.close();
+        return connectionProperties;
+    }
+
+
 }

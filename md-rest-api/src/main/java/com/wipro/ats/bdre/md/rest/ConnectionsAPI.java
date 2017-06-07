@@ -6,6 +6,7 @@ import com.wipro.ats.bdre.md.beans.table.Properties;
 import com.wipro.ats.bdre.md.dao.ConnectionPropertiesDAO;
 import com.wipro.ats.bdre.md.dao.ConnectionsDAO;
 import com.wipro.ats.bdre.md.dao.jpa.ConnectionProperties;
+import com.wipro.ats.bdre.md.dao.jpa.ConnectionPropertiesId;
 import com.wipro.ats.bdre.md.dao.jpa.Connections;
 import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import com.wipro.ats.bdre.md.rest.util.Dao2TableUtil;
@@ -221,5 +222,42 @@ public class ConnectionsAPI {
         }
         return restWrapperOptions;
     }
+
+    @RequestMapping(value = {"/{id}/{key}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public RestWrapperOptions getConnection(@PathVariable("id") String connectionName,
+                                            @PathVariable("key") String key, Principal principal) {
+
+        RestWrapperOptions restWrapperOptions = null;
+        try{
+            LOGGER.info("connectionName is "+connectionName+" key is "+key);
+            ConnectionPropertiesId connectionPropertiesId=new ConnectionPropertiesId();
+            connectionPropertiesId.setConnectionName(connectionName);
+            connectionPropertiesId.setPropKey(key);
+            ConnectionProperties connectionProperties=connectionPropertiesDAO.getConnectionsById(connectionPropertiesId);
+            String topics=connectionProperties.getPropValue();
+            String[] topicList=topics.split(",");
+            LOGGER.info("topic is "+topics);
+
+
+            List<RestWrapperOptions.Option> options = new ArrayList<RestWrapperOptions.Option>();
+
+            for (String tmp : topicList) {
+                RestWrapperOptions.Option option = new RestWrapperOptions.Option(tmp,tmp);
+                options.add(option);
+                LOGGER.info(option.getDisplayText());
+            }
+
+            restWrapperOptions = new RestWrapperOptions(options, RestWrapperOptions.OK);
+            LOGGER.info("Record with ID:" + connectionName + "selected from Properties by User:" + principal.getName());
+
+        } catch (MetadataException e) {
+            LOGGER.error(e);
+            restWrapperOptions = new RestWrapperOptions(e.getMessage(), RestWrapperOptions.ERROR);
+        }
+
+        return restWrapperOptions;
+    }
+
 
 }

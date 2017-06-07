@@ -275,7 +275,7 @@
 
                                                             label: "Message Configuration",
                            									collapse: "1",
-                           									url: "streamingmessage.page",
+                           									url: "premessageconfig.page",
                            									children: []
                            				},{
                            								   label: "Workflow Creator",
