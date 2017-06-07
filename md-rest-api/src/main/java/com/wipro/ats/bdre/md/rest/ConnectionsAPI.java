@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -93,12 +94,48 @@ public class ConnectionsAPI {
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     @ResponseBody
-    public RestWrapper list(@RequestParam(value = "page", defaultValue = "0") int startPage,
+    public RestWrapper list(
+                            @RequestParam(value = "page", defaultValue = "0") int startPage,
                             @RequestParam(value = "size", defaultValue = "10") int pageSize, Principal principal) {
 
         RestWrapper restWrapper = null;
         try {
             List<Connections> connectionsList = connectionsDAO.list(startPage, pageSize);
+            Long counter = connectionsDAO.totalRecordCount();
+            List<com.wipro.ats.bdre.md.beans.table.Connections> beanConnectionsList = new ArrayList<>();
+            for(Connections connection: connectionsList){
+                com.wipro.ats.bdre.md.beans.table.Connections beanConnection = new com.wipro.ats.bdre.md.beans.table.Connections();
+                beanConnection.setConnectionName(connection.getConnectionName());
+                beanConnection.setConnectionType(connection.getConnectionType());
+                beanConnection.setCounter(counter.intValue());
+                if(connection.getDescription() != null)
+                    beanConnection.setDescription(connection.getDescription());
+                beanConnectionsList.add(beanConnection);
+            }
+
+            restWrapper = new RestWrapper(beanConnectionsList, RestWrapper.OK);
+            LOGGER.info("All records listed from Connections by User:" + principal.getName());
+        }catch (SecurityException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        } catch (MetadataException e) {
+            LOGGER.error(e);
+            restWrapper = new RestWrapper(e.getMessage(), RestWrapper.ERROR);
+        }
+        return restWrapper;
+    }
+
+    @RequestMapping(value = {"/listbytype/{type}"}, method = RequestMethod.GET)
+    @ResponseBody
+    public RestWrapper listByConnectionType(
+            @PathVariable("type") String type,
+            @RequestParam(value = "page", defaultValue = "0") int startPage,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize, Principal principal) {
+
+        RestWrapper restWrapper = null;
+        try {
+            List<Connections> connectionsList = connectionsDAO.listByConnectionType(type,startPage, pageSize);
+            LOGGER.info("inside md-rest-api "+Arrays.asList(connectionsList));
             Long counter = connectionsDAO.totalRecordCount();
             List<com.wipro.ats.bdre.md.beans.table.Connections> beanConnectionsList = new ArrayList<>();
             for(Connections connection: connectionsList){
@@ -161,13 +198,13 @@ public class ConnectionsAPI {
             }
 
 
-    @RequestMapping(value = {"/optionslist"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/optionslist/{type}"}, method = RequestMethod.POST)
     @ResponseBody
-    public RestWrapperOptions listOptions() {
+    public RestWrapperOptions listOptions(@PathVariable("type") String type) {
 
         RestWrapperOptions restWrapperOptions = null;
         try {
-            List<Connections> connectionsList=connectionsDAO.list(0,0);
+            List<Connections> connectionsList=connectionsDAO.listByConnectionType(type,0,0);
 
             List<RestWrapperOptions.Option> options = new ArrayList<RestWrapperOptions.Option>();
 
@@ -184,12 +221,5 @@ public class ConnectionsAPI {
         }
         return restWrapperOptions;
     }
-
-
-
-
-
-
-
 
 }

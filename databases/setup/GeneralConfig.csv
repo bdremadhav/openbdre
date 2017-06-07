@@ -34,10 +34,6 @@
 '30', 'reducer', 'Reducer file', 'Reducer file Hadoop streaming',1, 'true', 'hadoopstream', 1
 '30','extraFiles','Additional Files','Optional files if any to upload',1,'true','addFiles',1
 '40', 'param', 'Parameters', 'Parameters', 1, 'true', 'text', 1
-'41','param','Parameters','Additional parameters', 1,'true','text', 1
-'43','filter','filter','filter', 1,'true','filter', 1
-'44','hdfs','hdfs','hdfs',1,'true','hdfs',1
-'42','kafka','kafka properties','kafka', 1,'true','kafka', 1
 'default_val.15','password_enabled','credential','Credentials for authentication', 1,'true','text', 1
 'default_val.5','password_enabled','credential','Credentials for authentication', 1,'true','text', 1
 'default_val.2','password_enabled','credential','Credentials for authentication', 1,'true','text', 1
@@ -590,6 +586,29 @@
 'cluster.nn-address', 'Local cluster - Namenode Address', 'Namenode Address','Local cluster' , 1, 'hdfs://${name_node_hostname}:${name_node_port}', 'text' , 1
 'cluster.jt-address', 'Local cluster - Job Tracker Address', 'Job Tracker Address','Local cluster' , 1, '${job_tracker_hostname}:${job_tracker_port}', 'text' , 1
 'cluster.hive-address', 'Local cluster - Hive Server2 Address', 'Hive Server2 Address','Local cluster' , 1, '${hive_server_hostname}:10000', 'text' , 1
+
+'41','param','Parameters','Additional parameters', 1,'true','text', 1
+'43','Filter','Filter','Filter', 1,'true','filter', 1
+
+'42','Kafka','Kafka Properties','Kafka', 1,'true','source', 1
+'46','Twitter','Twitter Properties','Twitter', 1,'true','source', 1
+'47','Kinesis','Kinesis Properties','Kinesis', 1,'true','source', 1
+'48','MQTT','MQTT Properties','MQTT', 1,'true','source', 1
+'49','RabbitMQ','RabbitMQ Properties','RabbitMQ', 1,'true','source', 1
+'50','Socket','Socket Properties','Socket', 1,'true','source', 1
+'51','S3','S3 Properties','S3', 1,'true','source', 1
+
+'52','Kafka','Kafka Properties','Kafka', 1,'true','emitter', 1
+'53','Kinesis','Kinesis Properties','Kinesis', 1,'true','emitter', 1
+'54','MQTT','MQTT Properties','MQTT', 1,'true','emitter', 1
+'55','RabbitMQ','RabbitMQ Properties','RabbitMQ', 1,'true','emitter', 1
+'56','Socket','Socket Properties','Socket', 1,'true','emitter', 1
+'57','JDBC','JDBC Properties','JDBC', 1,'true','emitter', 1
+
+'44','HDFS','HDFS Properties','hdfs',1,'true','persistentStore',1
+'58','Hive','Hive Properties','Hive',1,'true','persistentStore',1
+'59','HBase','HBase Properties','HBase',1,'true','persistentStore',1
+
 'column_transformation','no transformation','no transformation','no column transformation',1,'no transformation','text',1
 'column_transformation','upper','upper','changing column data in uppercase',1,'upper','text',1
 'column_transformation','lower','lower','changing column data in lowercase',1,'lower','text',1
@@ -598,7 +617,7 @@
 'column_transformation','floor','floor','It returns the maximum BIGINT value that is equal or less than the double',1,'floor','text',1
 
 'Source_Connection_Type','Kafka','Kafka','', 0,'Kafka','text', 1
-'Source_Connection_Type','TwitterSource','Twitter','', 0, 'Twitter','text', 1
+'Source_Connection_Type','Twitter','Twitter','', 0, 'Twitter','text', 1
 'Source_Connection_Type','Kinesis','Kinesis','', 0, 'Kinesis','text', 1
 'Source_Connection_Type','MQTT','MQTT','', 0, 'MQTT','text', 1
 'Source_Connection_Type','RabbitMQ','RabbitMQ','', 0, 'RabbitMQ','text', 1
@@ -607,11 +626,11 @@
 'Kafka_Source_Connection','zookeeper.connect','Zookeeper URL','', 1,'','text', 1
 'Kafka_Source_Connection','bootstrap.servers','List of Kafka Brokers','', 1,'','text', 1
 'Kafka_Source_Connection','topicName','Topic Name','config- Topicname', 1,'','text', 1
-'TwitterSource_Source_Connection','consumerKey','Consumer Key','OAuth consumer key', 1,'','password', 1
-'TwitterSource_Source_Connection','consumerSecret','Consumer Secret','OAuth consumer secret', 1,'','password', 1
-'TwitterSource_Source_Connection','accessToken','Access Token','OAuth access token', 1,'','password', 1
-'TwitterSource_Source_Connection','accessTokenSecret','Access Token Secret','OAuth toekn secret', 1,'','password', 1
-'TwitterSource_Source_Connection','keywords','HASHTAGS','config - keywords based on which you want filter your tweets', 1,'#BigData','text', 1
+'Twitter_Source_Connection','consumerKey','Consumer Key','OAuth consumer key', 1,'','password', 1
+'Twitter_Source_Connection','consumerSecret','Consumer Secret','OAuth consumer secret', 1,'','password', 1
+'Twitter_Source_Connection','accessToken','Access Token','OAuth access token', 1,'','password', 1
+'Twitter_Source_Connection','accessTokenSecret','Access Token Secret','OAuth toekn secret', 1,'','password', 1
+'Twitter_Source_Connection','keywords','HASHTAGS','config - keywords based on which you want filter your tweets', 1,'#BigData','text', 1
 'Kinesis_Source_Connection','appName','App Name','', 1,'','text', 1
 'Kinesis_Source_Connection','streamName','Stream Name','config- Name of kenisis stream', 1,'','text', 1
 'Kinesis_Source_Connection','endPointURL','End Point URL','', 1,'config- ','text', 1
@@ -672,6 +691,12 @@
 'RabbitMQ_Emitter_Connection','queueAutoDelete','Queue Auto Delete','config- TRUE to enable auto-delete.', 1,'','text', 1
 'Socket_Emitter_Connection','host','Host','IP address of the machine where Socket is running', 1,'','text', 1
 'Socket_Emitter_Connection','port','Port','Port of the machine where Socket is running', 1,'','text', 1
+'JDBC_Emitter_Connection','jdbcDriver','JDBC Driver','', 1,'','text', 1
+'JDBC_Emitter_Connection','jdbcUrl','JDBC URL','', 1,'','text', 1
+'JDBC_Emitter_Connection','username','Username','', 1,'','text', 1
+'JDBC_Emitter_Connection','password','Password','', 1,'','text', 1
+'JDBC_Emitter_Connection','schema','Schema','', 1,'','text', 1
+'JDBC_Emitter_Connection','table','Table Name','config- ', 1,'','text', 1
 'PersistentStores_Connection_Type','hdfs','HDFS','', 0,'HDFS','text', 1
 'PersistentStores_Connection_Type','hive','Hive','', 0,'Hive','text', 1
 'PersistentStores_Connection_Type','hbase','HBase','', 0,'HBase','text', 1
@@ -687,9 +712,6 @@
 'HBase_PersistentStores_Connection','zK Port','Zookeeper Port','Zookeeper port for hbase cluster.', 1,'','text', 1
 'HBase_PersistentStores_Connection','Encoding','Encoding','config- ', 1,'','text', 1
 'HBase_PersistentStores_Connection','connectionRetries','Connection Retries','config- ', 1,'','text', 1
-
-'Cassandra_PersistentStores_Connection','password','Password','', 1,'','text', 1
-
 
 
 

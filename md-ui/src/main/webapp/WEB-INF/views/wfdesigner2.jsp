@@ -309,7 +309,7 @@
                                                     </div>
                                                 </div>
                                                 <hr/>
-                                                <form class="form-horizontal" role="form" ng-if="genConfig.type != 'hql'  && genConfig.type != 'hadoopstream' && genConfig.type != 'r'  && genConfig.type != 'spark' && genConfig.type != 'pig' && genConfig.type != 'shell' && genConfig.type != 'kafka' && genConfig.type != 'filter' && genConfig.type != 'hdfs' && genConfig.type != 'addFiles'">
+                                                <form class="form-horizontal" role="form" ng-if="genConfig.type != 'hql'  && genConfig.type != 'hadoopstream' && genConfig.type != 'r'  && genConfig.type != 'spark' && genConfig.type != 'pig' && genConfig.type != 'shell' && genConfig.type != 'source' && genConfig.type != 'filter' && genConfig.type != 'emitter' && genConfig.type != 'persistentStore' && genConfig.type != 'addFiles'">
                                                     <div class="form-group">
                                                         <label class="control-label col-sm-2" for="{{genConfig.key}}-propkey"><spring:message code="wfdesigner.page.propkey_name"/></label>
                                                         <div class="col-sm-10">
@@ -326,17 +326,7 @@
                                                     <button type="submit" ng-click="insertProp(genConfig)" class="btn btn-primary  pull-right"><spring:message code="wfdesigner.page.button_add"/> {{genConfig.value}}</button>
                                                 </form>
 
-
-
-
-                                              <form class="form-horizontal" role="form" ng-if="genConfig.type == 'kafka'">
-
-                                                      <div class="form-group">
-                                                          <label for="connectionName">Connection Name</label>
-                                                          <select class="form-control" id="connectionName">
-                                                              <option ng-repeat="connection in connectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
-                                                          </select>
-                                                      </div>
+                                              <form class="form-horizontal" role="form" ng-if="genConfig.type == 'source'">
 
                                                        <div class="form-group">
                                                             <label for="messageName">Message Name</label>
@@ -345,10 +335,8 @@
                                                             </select>
                                                         </div>
 
-
-
                                               		  <div class="clearfix"></div>
-                                              		  <button type="submit" ng-click="insertKafkaProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Submit kafka properties</button>
+                                              		  <button type="submit" ng-click="insertSourceProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Save</button>
                                               	  </form>
 
 
@@ -373,30 +361,39 @@
                                                     </div>
 
                                                     <div class="clearfix"></div>
-                                                     <button type="submit" ng-click="insertOperatorProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Submit Transformation properties</button>
+                                                     <button type="submit" ng-click="insertFilterProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Submit</button>
                                                 </form>
 
 
 
 
-                                            <form class="form-horizontal" role="form" ng-if="genConfig.type == 'hdfs'">
+                                            <form class="form-horizontal" role="form" ng-if="genConfig.type == 'emitter'">
 
                                                 <div class="form-group">
-                                                    <label for="hdfsConnectionName">Connection Name</label>
-                                                    <select class="form-control" id="hdfsConnectionName">
-                                                        <option ng-repeat="connection in connectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
+                                                    <label for="emitterConnectionName">Connection Name</label>
+                                                    <select class="form-control" id="emitterConnectionName">
+                                                        <option ng-repeat="connection in emitterConnectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
                                                     </select>
                                                 </div>
 
-                                                  <div class="form-group">
-                                                       <label for="messageName">Message Name</label>
-                                                       <select class="form-control" id="messageName">
-                                                           <option ng-repeat="message in newMessagesList" id="{{$index}}" value="{{ message.Value }}">{{ message.DisplayText }}</option>
-                                                       </select>
-                                                   </div>
                                                     <div class="clearfix"></div>
-                                                    <button type="submit" ng-click="insertHdfsProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Submit HDFS properties</button>
+                                                    <button type="submit" ng-click="insertEmitterProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Save</button>
                                                 </form>
+
+
+                                                <form class="form-horizontal" role="form" ng-if="genConfig.type == 'persistentStore'">
+
+                                                    <div class="form-group">
+                                                        <label for="persistentStoreConnectionName">Connection Name</label>
+                                                        <select class="form-control" id="persistentStoreConnectionName">
+                                                            <option ng-repeat="connection in persistentStoreConnectionsList" id="{{$index}}" value="{{ connection.Value }}">{{ connection.DisplayText }}</option>
+                                                        </select>
+                                                    </div>
+
+
+                                                        <div class="clearfix"></div>
+                                                        <button type="submit" ng-click="insertPersistentStoreProp(chartViewModel.selectedProcess.processId)" class="btn btn-primary  pull-right">Save</button>
+                                                    </form>
 
                                                 <form class="form-horizontal" role="form" ng-if="genConfig.type == 'hql'">
 
@@ -502,20 +499,20 @@
                                             <div class="col-md-8">
                                                 <!-- Split button -->
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-default">Add Source</button>
+                                                    <button type="button" class="btn btn-default">Source</button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <span class="sr-only"><spring:message code="wfdesigner.page.button_dropdown"/></span>&nbsp;
                                                         <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li ng-repeat="pType in source_processTypes.Options">
-                                                            <a href="#" ng-click="addNewNode(pType.Value)">{{pType.DisplayText}}</a>
+                                                            <a href="#" ng-click="addNewNode(pType.Value, pType.DisplayText)">{{pType.DisplayText}}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
                                                 <!-- Split button -->
                                                 <div class="btn-group">
-                                                <button type="button" class="btn btn-default">Add Transformation</button>
+                                                <button type="button" class="btn btn-default">Transformation</button>
                                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <span class="sr-only"><spring:message code="wfdesigner.page.button_dropdown"/></span>&nbsp;
                                                     <span class="caret"></span>
@@ -529,18 +526,34 @@
 
                                             <!-- Split button -->
                                                         <div class="btn-group">
-                                                        <button type="button" class="btn btn-default">Add Destination</button>
+                                                        <button type="button" class="btn btn-default">Emitter</button>
                                                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <span class="sr-only"><spring:message code="wfdesigner.page.button_dropdown"/></span>&nbsp;
                                                             <span class="caret"></span>
                                                         </button>
                                                         <ul class="dropdown-menu">
-                                                            <li ng-repeat="pType in destination_processTypes.Options">
+                                                            <li ng-repeat="pType in emitter_processTypes.Options">
                                                                 <a href="#" ng-click="addNewNode(pType.Value)">{{pType.DisplayText}}</a>
                                                             </li>
                                                         </ul>
                                                     </div>
                                                 <!-- Split button -->
+
+                                                 <!-- Split button -->
+                                                    <div class="btn-group">
+                                                    <button type="button" class="btn btn-default">Persistent Store</button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span class="sr-only"><spring:message code="wfdesigner.page.button_dropdown"/></span>&nbsp;
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li ng-repeat="pType in persistentStore_processTypes.Options">
+                                                            <a href="#" ng-click="addNewNode(pType.Value)">{{pType.DisplayText}}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            <!-- Split button -->
+
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-default"><spring:message code="wfdesigner.page.button_action"/></button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

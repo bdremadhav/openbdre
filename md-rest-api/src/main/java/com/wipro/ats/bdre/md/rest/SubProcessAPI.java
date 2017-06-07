@@ -22,6 +22,7 @@ import com.wipro.ats.bdre.md.dao.ProcessTypeDAO;
 import com.wipro.ats.bdre.md.dao.PropertiesDAO;
 import com.wipro.ats.bdre.md.dao.jpa.BusDomain;
 import com.wipro.ats.bdre.md.dao.jpa.ProcessTemplate;
+import com.wipro.ats.bdre.md.dao.jpa.ProcessType;
 import com.wipro.ats.bdre.md.dao.jpa.WorkflowType;
 import com.wipro.ats.bdre.md.rest.util.BindingResultError;
 import com.wipro.ats.bdre.md.rest.util.DateConverter;
@@ -244,8 +245,9 @@ public class SubProcessAPI extends MetadataAPIBase {
             com.wipro.ats.bdre.md.dao.jpa.Process insertDaoProcess = new com.wipro.ats.bdre.md.dao.jpa.Process();
             com.wipro.ats.bdre.md.dao.jpa.ProcessType daoProcessType =processTypeDAO.get(process.getProcessTypeId());
             insertDaoProcess.setProcessType(daoProcessType);
-
             LOGGER.info("process type:"+daoProcessType.getParentProcessTypeId());
+
+
             if (process.getWorkflowId() != null) {
                 WorkflowType daoWorkflowType = new WorkflowType();
                 daoWorkflowType.setWorkflowId(process.getWorkflowId());
@@ -259,12 +261,15 @@ public class SubProcessAPI extends MetadataAPIBase {
                 daoProcessTemplate.setProcessTemplateId(process.getProcessTemplateId());
                 insertDaoProcess.setProcessTemplate(daoProcessTemplate);
             }
+            com.wipro.ats.bdre.md.dao.jpa.Process parentProcess = null;
             if (process.getParentProcessId() != null) {
-                com.wipro.ats.bdre.md.dao.jpa.Process parentProcess = processDAO.get(process.getParentProcessId());
-                insertDaoProcess.setProcess(parentProcess);
-                LOGGER.info("Parent process Id:"+parentProcess.getProcessId());
+                parentProcess = processDAO.get(process.getParentProcessId());
 
+                LOGGER.info("Parent process Id:"+parentProcess.getProcessId());
             }
+
+            insertDaoProcess.setProcess(parentProcess);
+
             insertDaoProcess.setDescription(process.getDescription());
             insertDaoProcess.setAddTs(DateConverter.stringToDate(process.getTableAddTS()));
             insertDaoProcess.setProcessName(process.getProcessName());
@@ -282,6 +287,7 @@ public class SubProcessAPI extends MetadataAPIBase {
                     insertDaoProcess.setBatchCutPattern(process.getBatchPattern());
                 }
             }
+
             insertDaoProcess.setNextProcessId(process.getNextProcessIds());
             if (process.getDeleteFlag() == null)
                 insertDaoProcess.setDeleteFlag(false);
@@ -291,6 +297,28 @@ public class SubProcessAPI extends MetadataAPIBase {
             LOGGER.info("inserting subprocess");
             Integer processId = processDAO.insert(insertDaoProcess);
             process.setProcessId(processId);
+
+            String parentNextProcessId = parentProcess.getNextProcessId();
+            String processTypeName = daoProcessType.getProcessTypeName();
+            LOGGER.info("parentNextProcessId "+parentNextProcessId);
+            LOGGER.info("processTypeName.split(\"_\")[0] "+processTypeName.split("_")[0]);
+            if(processTypeName.split("_")[0].equalsIgnoreCase("source")) {
+                LOGGER.info("source is selected");
+                if (parentNextProcessId.equalsIgnoreCase("0")) {
+                    LOGGER.info("1st source");
+                    parentNextProcessId = process.getProcessId().toString();
+                }
+                else {
+                    LOGGER.info("After 1st source");
+                    parentNextProcessId = parentNextProcessId + "," + process.getProcessId().toString();
+                }
+                LOGGER.info("Latest parentNextProcessId "+parentNextProcessId);
+                parentProcess.setNextProcessId(parentNextProcessId);
+                processDAO.update(parentProcess);
+            }
+
+            LOGGER.info("parent process info "+parentProcess.toString());
+
             process.setTableAddTS(DateConverter.dateToString(insertDaoProcess.getAddTs()));
             process.setTableEditTS(DateConverter.dateToString(insertDaoProcess.getEditTs()));
             restWrapper = new RestWrapper(process, RestWrapper.OK);

@@ -43,6 +43,15 @@ var processtypeOptionslistAC = function (ajaxURL, type, arg) {
 	return returnObject;
 }
 
+var processTypeAC = function (ajaxURL, processId) {
+	var returnObject;
+
+    returnObject = ajaxCall(ajaxURL+processId, 'GET');
+
+    return returnObject;
+}
+
+
 var permissiontypeOptionslistAC = function (ajaxURL, type, arg) {
 	var returnObject;
 	switch(type) {
@@ -171,6 +180,7 @@ var subprocessAC = function (ajaxURL, type, arg) {
 		case 'PUT':
 			ajaxURL = ajaxURL;
 			returnObject = ajaxCall(ajaxURL, type, arg);
+			console.log("result object "+returnObject);
 			alterNPC(returnObject.processId, returnObject);
 			break;
 		case 'DELETE':

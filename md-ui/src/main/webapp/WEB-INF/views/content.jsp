@@ -255,17 +255,17 @@
                                                             label: "Configuration Management",
                                                             collapse: "1",
                                                             children: [{
-                                                               label: "Source Management",
+                                                               label: "Source Configuration",
                                                                collapse: "1",
                                                                url: "connections.page?type=source",
                                                                children: []
                                         }, {
-                                                               label: "Emitter Management",
+                                                               label: "Emitter Configuration",
                                                                collapse: "1",
                                                                url: "connections.page?type=emitter",
                                                                children: []
                                         }, {
-                                                               label: "Persistence Management",
+                                                               label: "Persistence Configuration",
                                                                collapse: "1",
                                                               url: "connections.page?type=persistance",
                                                                children: []

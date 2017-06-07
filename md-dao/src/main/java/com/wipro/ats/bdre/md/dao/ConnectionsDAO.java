@@ -6,10 +6,12 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,6 +36,27 @@ public class ConnectionsDAO {
         criteria.setFirstResult(pageNum);
         criteria.setMaxResults(numResults);
         List<Connections> connections = criteria.list();
+        //Transaction end (commit)
+        session.getTransaction().commit();
+        session.close();
+        return connections;
+    }
+
+
+
+    public List<Connections> listByConnectionType(String connectionType,Integer pageNum, Integer numResults) {
+        Session session = sessionFactory.openSession();
+        //Transaction begin
+        session.beginTransaction();
+        //Everything would be under transaction
+        Criteria criteria = session.createCriteria(Connections.class);
+        LOGGER.info("connectionType "+connectionType);
+        String connectionRegex = connectionType+"%";
+        criteria.add(Restrictions.like("connectionType",connectionRegex));
+        criteria.setFirstResult(pageNum);
+        criteria.setMaxResults(numResults);
+        List<Connections> connections = criteria.list();
+        LOGGER.info("inside md-dao "+Arrays.asList(connections));
         //Transaction end (commit)
         session.getTransaction().commit();
         session.close();

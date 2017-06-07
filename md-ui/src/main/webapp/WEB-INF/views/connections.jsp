@@ -246,7 +246,7 @@ function source()
                 <label style="left: 125px;" class="control-label col-sm-3">Emitter Configuration Type</label>
                 <div id="dropdownEmitter" class="btn-group" style="left: 145px;" >
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="emitterDropdown">
-                        <span>Select Source</span><span class="caret"></span>
+                        <span>Select Emitter</span><span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="emitterDropdown">
                         <li>
@@ -283,7 +283,7 @@ function source()
                 <label style="left: 125px;" class="control-label col-sm-3">PersistentStore Configuration Type</label>
                 <div id="dropdownPersistentStores" class="btn-group" style="left: 145px;" >
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true" id="persistentStoresDropdown">
-                        <span>Select Source</span><span class="caret"></span>
+                        <span>Select Persistent Store</span><span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="persistentStoresDropdown">
                         <li>
@@ -332,13 +332,13 @@ function source()
                                      console.log("inside create connection function")
                                      formIntoMap(connectionType+'_', connectionType+'ConnectionForm');
                                      if(connectionType=="source"){
-                                         map['type_source'] = selectedSourceType;
+                                         map['type_source'] = "source_"+selectedSourceType;
                                      }
                                      if(connectionType=="emitter"){
-                                         map['type_emitter'] = selectedEmitterType;
+                                         map['type_emitter'] = "emitter_"+selectedEmitterType;
                                      }
                                      if(connectionType=="persistentStores"){
-                                         map['type_persistentStores'] = selectedPersistentStoreType;
+                                         map['type_persistentStores'] = "persistentStore_"+selectedPersistentStoreType;
                                      }
                                      $.ajax({
                                          type: "POST",
@@ -474,10 +474,20 @@ function source()
     		    sorting: true,
     		    actions: {
     		    listAction: function (postData, jtParams) {
+    		    var type;
+                    console.log(window.location.href);
+                    var str=window.location.href;
+                    if(str.includes("source")==true)
+                     type = "source";
+                     if(str.includes("emitter")==true)
+                     type = "emitter";
+                     if(str.includes("persistance")==true)
+                      type = "persistentStore";
+
     		    console.log(postData);
     			    return $.Deferred(function ($dfd) {
     			    $.ajax({
-    			    url: '/mdrest/connections?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
+    			    url: '/mdrest/connections/listbytype/'+ type +'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
     				    type: 'GET',
     				    data: postData,
     				    dataType: 'json',
@@ -516,7 +526,7 @@ function source()
                                             return $.Deferred(function($dfd) {
                                                 console.log(item);
                                                 $.ajax({
-                                                    url: '/mdrest/connections/' + item.record.connectionName+'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
+                                                    url: '/mdrest/connections/getonerecord/' + item.record.connectionName+'?page=' + jtParams.jtStartIndex + '&size='+jtParams.jtPageSize,
                                                     type: 'GET',
                                                     data: item,
                                                     dataType: 'json',
@@ -632,7 +642,7 @@ function source()
                          var inputHTML = '';
                          inputHTML = inputHTML + '<div class="form-group buildForm">';
                             inputHTML = inputHTML +  '<label class="control-label col-sm-3 for="' + v.key + '">' + v.value + '</label>';
-                            inputHTML = inputHTML + '<div class="col-sm-9"> <input name="' + v.key + '" value="' + v.defaultVal + '" placeholder="' + v.description + '" type="' + v.type + '" class="form-control" id="' + v.key + '"></div>';
+                            inputHTML = inputHTML + '<div class="col-sm-9"> <input name="' + v.key + '" value="' + v.defaultVal + '" type="' + v.type + '" class="form-control" id="' + v.key + '"></div>';
                             inputHTML = inputHTML + '</div>';
                            $('#'+typeDiv).append(inputHTML);
                       });

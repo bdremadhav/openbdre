@@ -42,20 +42,21 @@
 42,'source_Kafka',41
 43,'operator_Filter',41
 45,'operator_Union',41
-44,'persistanceStore_HDFS',41
-46,'source_TwitterSource',41
+44,'persistentStore_HDFS',41
+46,'source_Twitter',41
 47,'source_Kinesis',41
 48,'source_MQTT',41
 49,'source_RabbitMQ',41
 50,'source_Socket',41
 51,'source_S3',41
-52,'emitter_Kinesis',41
-53,'emitter_MQTT',41
-54,'emitter_RabbitMQ',41
-55,'emitter_Socket',41
-56,'emitter_JDBC',41
-57,'persistanceStore_Hive',41
-58,'persistanceStore_HBase',41
+52,'emitter_Kafka',41
+53,'emitter_Kinesis',41
+54,'emitter_MQTT',41
+55,'emitter_RabbitMQ',41
+56,'emitter_Socket',41
+57,'emitter_JDBC',41
+58,'persistentStore_Hive',41
+59,'persistentStore_HBase',41
 
 
 
