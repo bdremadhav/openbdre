@@ -3,7 +3,12 @@ package com.wipro.ats.bdre.md.rest.util;
 import com.wipro.ats.bdre.exception.MetadataException;
 import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
 import com.wipro.ats.bdre.md.beans.table.MessageColumnSchema;
+import com.wipro.ats.bdre.md.dao.ConfigurationPropertiesDAO;
+import com.wipro.ats.bdre.md.dao.ConnectionsDAO;
 import com.wipro.ats.bdre.md.dao.MessagesDAO;
+import com.wipro.ats.bdre.md.dao.jpa.ConfigurationProperties;
+import com.wipro.ats.bdre.md.dao.jpa.ConfigurationPropertiesId;
+import com.wipro.ats.bdre.md.dao.jpa.Connections;
 import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import com.wipro.ats.bdre.md.rest.RestWrapper;
 import com.wipro.ats.bdre.md.rest.RestWrapperOptions;
@@ -33,7 +38,10 @@ public class MessageSchemaAPI extends MetadataAPIBase {
 
     @Autowired
     MessagesDAO messagesDAO;
-
+    @Autowired
+    ConnectionsDAO connectionsDAO;
+   @Autowired
+    ConfigurationPropertiesDAO configurationPropertiesDAO;
     @RequestMapping(value = {"/createjobs"}, method = RequestMethod.POST)
     @ResponseBody
     public RestWrapper createJob(HttpServletRequest request, Principal principal) {
@@ -69,6 +77,9 @@ public class MessageSchemaAPI extends MetadataAPIBase {
         String messageName="";
         String messageFormat="";
         String schema="";
+        String connectionName="";
+        String delimiter="";
+        String topicName="";
         for (String string : map.keySet()) {
             if (string.startsWith("rawtablecolumn_")) {
                 String columnName = string.replaceAll("rawtablecolumn_", "");
@@ -81,18 +92,56 @@ public class MessageSchemaAPI extends MetadataAPIBase {
                 if (string.endsWith("messageName")) {
                     messageName = map.get(string);
                     LOGGER.info("messageName is " + messageName);
-                } else {
+                }
+                if (string.endsWith("connectionName")) {
+                    connectionName = map.get(string);
+                    LOGGER.info("connectionName is " + connectionName);
+                }
+                  if (string.endsWith("delimiter")) {
+                    delimiter = map.get(string);
+                    LOGGER.info("delimiter is " + delimiter);
+                }
+                 if (string.endsWith("delimiter")) {
+                    delimiter = map.get(string);
+                    LOGGER.info("delimiter is " + delimiter);
+                }
+                if (string.endsWith("fileformat")){
                     messageFormat = map.get(string);
                     LOGGER.info("messageFormat is " + messageFormat);
                 }
+                if (string.endsWith("topicName")){
+                    topicName = map.get(string);
+                    LOGGER.info("topicName is " + topicName);
+                }
+
             }
         }
+
+            Connections jpaConnections=connectionsDAO.get(connectionName);
             Messages messages=new Messages();
-            messages.setMessagename(messageName);
+            messages.setConnections(jpaConnections);
+            messages.setMessageName(messageName);
             messages.setFormat(messageFormat);
+            messages.setDelimiter(delimiter);
             messages.setMessageSchema(schema.substring(1,schema.length()));
-            LOGGER.info(messageName+" "+messageFormat+" "+schema);
+            LOGGER.info(messageName+" "+messageFormat+" "+schema+" "+connectionName+" "+delimiter);
             messagesDAO.insert(messages);
+
+            String key="";
+            String configGroup="";
+            if(jpaConnections.getConnectionType().contains("kafka")){
+                key="topicName";
+                configGroup="kafka";
+            }
+             ConfigurationPropertiesId configurationPropertiesId=new ConfigurationPropertiesId();
+             configurationPropertiesId.setMessageName(messageName);
+             configurationPropertiesId.setPropKey(key);
+             ConfigurationProperties configurationProperties=new ConfigurationProperties();
+             configurationProperties.setId(configurationPropertiesId);
+             configurationProperties.setPropValue(topicName);
+             configurationProperties.setConfigGroup(configGroup);
+             configurationPropertiesDAO.insert(configurationProperties);
+
         restWrapper = new RestWrapper(null, RestWrapper.OK);
         LOGGER.info("Process and Properties for data load process inserted by" + principal.getName());
 
@@ -115,7 +164,7 @@ public class MessageSchemaAPI extends MetadataAPIBase {
             List<RestWrapperOptions.Option> options = new ArrayList<RestWrapperOptions.Option>();
 
             for (Messages messages : messagesList) {
-                RestWrapperOptions.Option option = new RestWrapperOptions.Option(messages.getMessagename(),messages.getMessagename());
+                RestWrapperOptions.Option option = new RestWrapperOptions.Option(messages.getMessageName(),messages.getMessageName());
                 options.add(option);
                 LOGGER.info(option.getDisplayText());
             }
@@ -144,7 +193,7 @@ public class MessageSchemaAPI extends MetadataAPIBase {
             for (com.wipro.ats.bdre.md.dao.jpa.Messages messages : jpaMessageList) {
                 com.wipro.ats.bdre.md.beans.table.Messages messages1=new com.wipro.ats.bdre.md.beans.table.Messages();
                 messages1.setMessageSchema(messages.getMessageSchema());
-                messages1.setMessagename(messages.getMessagename());
+                messages1.setMessagename(messages.getMessageName());
                 messages1.setFormat(messages.getFormat());
                 messages1.setCounter(counter);
                 messagesList.add(messages1);

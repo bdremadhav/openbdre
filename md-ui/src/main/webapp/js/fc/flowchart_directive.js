@@ -470,6 +470,7 @@ angular.module('flowChart', ['dragging'] )
                      	else{
                      		dataRecord.nextProcessIds = dataRecord.nextProcessIds + "," + destPid;
                      	}
+                     	console.log("nextprocessid is "+dataRecord.nextProcessIds);
                      	//TS fields cause exception due to time format
                      	delete dataRecord["addTS"];
                      	delete dataRecord["editTS"];
