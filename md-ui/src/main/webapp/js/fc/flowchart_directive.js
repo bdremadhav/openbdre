@@ -464,7 +464,7 @@ angular.module('flowChart', ['dragging'] )
                      if(sourcePid<0)sourcePid=-sourcePid;
                      var dataRecord = processAC('/mdrest/process/', 'GET', sourcePid);
                      if (dataRecord) {
-                     	if(dataRecord.nextProcessIds=='0'){
+                     	if(dataRecord.nextProcessIds==dataRecord.parentProcessId){
                      		dataRecord.nextProcessIds=destPid;
                      	}
                      	else{

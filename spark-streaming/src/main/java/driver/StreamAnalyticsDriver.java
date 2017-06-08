@@ -6,11 +6,9 @@ import com.wipro.ats.bdre.md.api.GetProperties;
 import com.wipro.ats.bdre.md.api.StreamingMessagesAPI;
 import com.wipro.ats.bdre.md.beans.ProcessInfo;
 import com.wipro.ats.bdre.md.dao.jpa.Messages;
-import datasources.KafkaSource;
-import emitters.HDFSEmitter;
-import kafka.serializer.StringDecoder;
-import messageformat.DelimitedTextParser;
-import messageformat.RegexParser;
+import datasources.Source;
+import emitters.Emitter;
+import messageformat.MessageParser;
 import messageschema.SchemaReader;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -28,12 +26,9 @@ import org.apache.spark.sql.types.StructType;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaPairInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.kafka.KafkaUtils;
-import scala.Tuple2;
-import transformations.Filter;
-import transformations.Union;
+import persistentstores.PersistentStore;
+import transformations.Transformation;
 
 import java.io.Serializable;
 import java.util.*;
@@ -45,16 +40,22 @@ import java.util.*;
 public class StreamAnalyticsDriver implements Serializable {
 
     public static final Logger LOGGER = Logger.getLogger(StreamAnalyticsDriver.class);
+    public static final String SOURCEPACKAGE = "datasources.";
+    public static final String TRANSFORMATIONSPACKAGE = "transformations.";
+    public static final String EMITTERPACKAGE = "emitters.";
+    public static final String PERSISTENTSTOREPACKAGE = "persistentstores.";
+    public static final String MESSAGEFORMATPACKAGE = "messageformat.";
     public static Map<Integer, Set<Integer>> prevMap = new HashMap<>();
     public static List<Integer> listOfSourcePids = new ArrayList<>();
     public static List<Integer> listOfTransformations = new ArrayList<>();
     public static List<Integer> listOfEmitters = new ArrayList<>();
+    public static List<Integer> listOfPersistentStores = new ArrayList<>();
     public static Map<Integer, String> nextPidMap = new HashMap<Integer, String>();
     public static Map<Integer,String> pidMessageTypeMap = new HashedMap();
     public static Integer parentProcessId;
     static int countEmitterCovered = 0;
     static Time batchStartTime = new Time(0);
-    static Map<Integer,JavaPairInputDStream<String, String>> pidPairDStreamMap= new HashMap<>();
+    static Map<Integer,JavaDStream<String>> pidDStreamMap= new HashMap<>();
     public Map<Integer, DataFrame> pidDataFrameMap = new HashedMap();
     Integer sourcePid = 0;
 
@@ -69,7 +70,9 @@ public class StreamAnalyticsDriver implements Serializable {
             nextPidMap.put(processInfo.getProcessId(),processInfo.getNextProcessIds());
             GetParentProcessType getParentProcessType=new GetParentProcessType();
             String processTypeName=getParentProcessType.processTypeName(processInfo.getProcessId());
-            if(processTypeName.contains("source"))
+
+            //TODO: Use processtype map here instead of string startswith
+            if(processTypeName.startsWith("source"))
             {
                 listOfSourcePids.add(processInfo.getProcessId());
                 GetProperties getProperties=new GetProperties();
@@ -81,13 +84,17 @@ public class StreamAnalyticsDriver implements Serializable {
                 pidMessageTypeMap.put(processInfo.getProcessId(),messages.getFormat());
 
             }
-            if(processTypeName.contains("operator"))
+            if(processTypeName.startsWith("operator"))
             {
                 listOfTransformations.add(processInfo.getProcessId());
             }
-            if(processTypeName.contains("destination"))
+            if(processTypeName.startsWith("emitter"))
             {
                 listOfEmitters.add(processInfo.getProcessId());
+            }
+            if(processTypeName.startsWith("persistentStore"))
+            {
+                listOfPersistentStores.add(processInfo.getProcessId());
             }
 
         }
@@ -99,6 +106,7 @@ public class StreamAnalyticsDriver implements Serializable {
             prevMap.put(sourcePid, null);
         }
         // Create a Spark Context.
+        //TODO get appname properties from parent process
         SparkConf conf = new SparkConf().setAppName("Log Analyzer");
         JavaSparkContext sc = new JavaSparkContext(conf);
         Broadcast<Map<Integer,String>> broadcastVar = sc.broadcast(pidMessageTypeMap);
@@ -129,14 +137,18 @@ public class StreamAnalyticsDriver implements Serializable {
     }
     public void createDStreams(JavaStreamingContext ssc,List<Integer> listOfSourcePids){
         for (Integer pid : listOfSourcePids) {
-            String sourceType = "Kafka";
-            if (sourceType.equals("Kafka")) {
-                KafkaSource kafkaSource = new KafkaSource();
-                Map<String, String> kafkaParams = kafkaSource.getKafkaParams(pid);
-                Set<String> topics = kafkaSource.getTopics(pid);
-                System.out.println("topics = " + topics);
-                final JavaPairInputDStream<String, String> directKafkaStream = KafkaUtils.createDirectStream(ssc, String.class, String.class, StringDecoder.class, StringDecoder.class, kafkaParams, topics);
-                pidPairDStreamMap.put(pid,directKafkaStream);
+            GetParentProcessType getParentProcessType=new GetParentProcessType();
+            String processTypeName=getParentProcessType.processTypeName(pid);
+            String sourceType = processTypeName.replace("source_","");
+            String sourceClassName = SOURCEPACKAGE+sourceType+"Source";
+            try {
+                Class sourceClass = Class.forName(sourceClassName);
+                Source sourceObject = (Source)sourceClass.newInstance();
+                JavaDStream javaDStream = sourceObject.execute(ssc, pid);
+                pidDStreamMap.put(pid,javaDStream);
+            }catch (Exception e){
+                LOGGER.info(e);
+                e.printStackTrace();
             }
         }
     }
@@ -183,16 +195,10 @@ public class StreamAnalyticsDriver implements Serializable {
     public void createDataFrames(JavaStreamingContext ssc, List<Integer> listOfSourcePids, Map<Integer, Set<Integer>> prevMap, Map<Integer, String> nextPidMap, Broadcast<Map<Integer,String>> broadcastVar) {
         System.out.println("prevMap = " + prevMap);
         //iterate through each source and create respective dataFrames for sources
-        for (Integer pid : pidPairDStreamMap.keySet()) {
+        for (Integer pid : pidDStreamMap.keySet()) {
             System.out.println("pid = " + pid);
             System.out.println("FetchingDStream for source pid= " + pid);
-            JavaDStream<String> msgDataStream = pidPairDStreamMap.get(pid).map(new Function<Tuple2<String, String>, String>() {
-                @Override
-                public String call(Tuple2<String, String> tuple2) {
-                    System.out.println("count pid = " + pid+ " tuple2._2()"+tuple2._2());
-                    return tuple2._2();
-                }
-            });
+            JavaDStream<String> msgDataStream = pidDStreamMap.get(pid);
             msgDataStream.foreachRDD(
                     new Function2<JavaRDD<String>, Time, Void>() {
                         @Override
@@ -226,12 +232,22 @@ public class StreamAnalyticsDriver implements Serializable {
                                                                   //String messageType = broadcastVar.value().get(pid);
                                                                   //String messageType = pidMessageTypeMap.get(pid);
                                                                   //String messageType = "Regex";
-                                                                  //TODO: Add logic to handle other message types like delimited, etc..
-                                                                  if (messageType.equalsIgnoreCase("Regex")) {
-                                                                      attributes = new RegexParser().parseRecord(record, pid);
-                                                                  } else if (messageType.equalsIgnoreCase("Delimited")) {
-                                                                      attributes = new DelimitedTextParser().parseRecord(record, pid);
+
+                                                                  //TODO: Add logic to handle other message types like json, etc..
+                                                                  //TODO: changenow
+                                                                  messageType = "Regex";
+                                                                  System.out.println("messageType = " + messageType);
+                                                                  String messageClassName = MESSAGEFORMATPACKAGE+messageType+"Parser";
+                                                                  try {
+                                                                      Class sourceClass = Class.forName(messageClassName);
+                                                                      MessageParser messageObject = (MessageParser)sourceClass.newInstance();
+                                                                      attributes = messageObject.parseRecord(record,pid);
+                                                                      System.out.println("attributes = " + attributes);
+                                                                  }catch (Exception e){
+                                                                      LOGGER.info(e);
+                                                                      e.printStackTrace();
                                                                   }
+
                                                                   return RowFactory.create(attributes);
                                                               }
                                                           }
@@ -292,39 +308,19 @@ public class StreamAnalyticsDriver implements Serializable {
                     //this pid is of type transformation, find prev pids to output the appropriate dataframe
                     Set<Integer> prevPids = prevMap.get(pid);
                     System.out.println("prevMap = " + prevMap);
-                    if (prevPids.size() > 1) {
-                        System.out.println(" inside union " );
-                        //obtain list of corresponding prevDataFrames for all prevPids
-                        DataFrame[] prevDataFrames = new DataFrame[prevPids.size()];
+
                         GetParentProcessType getParentProcessType=new GetParentProcessType();
-                        String processTypeName=getParentProcessType.processTypeName(pid);
-                        String transformationType=processTypeName.replace("operator_","");
-                        //String transformationType = "union";
-                        if (transformationType.equals("union")) {
-                            Union union = new Union();
-                            DataFrame dataFramePostTransformation = union.transform(pidDataFrameMap, prevMap, pid);
+                        String transformationType=getParentProcessType.processTypeName(pid).replace("operator_","");
+                        String transformationClassName = TRANSFORMATIONSPACKAGE+transformationType;
+                        try {
+                            Class transformationClass = Class.forName(transformationClassName);
+                            Transformation transformationObject = (Transformation)transformationClass.newInstance();
+                            DataFrame dataFramePostTransformation = transformationObject.transform(pidDataFrameMap, prevMap, pid);
                             pidDataFrameMap.put(pid, dataFramePostTransformation);
+                        }catch (Exception e){
+                            LOGGER.info(e);
+                            e.printStackTrace();
                         }
-                        //this transformation involves multiple upstream dataframes, e.g: join or union etc.
-                        //find the transformation type and create dataframe accordingly
-                    } else {
-                        System.out.println(" inside filter " );
-                        System.out.println("pid = " + pid);
-                        //this transformation contains only one upstream pid
-                        List<Integer> prevPidList = new ArrayList<Integer>();
-                        prevPidList.addAll(prevMap.get(pid));
-                        Integer prevPid = prevPidList.get(0);
-                        //TODO: Fetch the transformation type from DB
-                        String transformationType = "filter";
-                        GetParentProcessType getParentProcessType=new GetParentProcessType();
-                        transformationType=getParentProcessType.processTypeName(pid).replace("operator_","");
-                        System.out.println("transformationType = " + transformationType);
-                        if (transformationType.equalsIgnoreCase("filter")) {
-                            Filter filter = new Filter();
-                            DataFrame dataFramePostTransformation = filter.transform(pidDataFrameMap, prevMap, pid);
-                            pidDataFrameMap.put(pid, dataFramePostTransformation);
-                        }
-                    }
                 }
                 if (listOfEmitters.contains(pid)) {
                     //found emitter node, so get upstream pid and persist based on emitter
@@ -335,16 +331,50 @@ public class StreamAnalyticsDriver implements Serializable {
                         System.out.println("count = " + count);
                         System.out.println("currently trying to emit dataframe of prevPid = " + prevPid);
                         DataFrame prevDataFrame = pidDataFrameMap.get(prevPid);
-                        String emitterType = "HDFSEmitter";
-                        if (emitterType.equals("HDFSEmitter")) {
-                            HDFSEmitter hdfsEmitter = new HDFSEmitter();
-                            hdfsEmitter.persist(prevDataFrame, pid, prevPid);
+
+                        GetParentProcessType getParentProcessType=new GetParentProcessType();
+                        String emitterType=getParentProcessType.processTypeName(pid).replace("emitter_","");
+                        String emitterClassName = EMITTERPACKAGE+emitterType+"Emitter";
+                        try {
+                            Class emitterClass = Class.forName(emitterClassName);
+                            Emitter emitterObject = (Emitter)emitterClass.newInstance();
+                            emitterObject.persist(prevDataFrame, pid, prevPid);
+                        }catch (Exception e){
+                            LOGGER.info(e);
+                            e.printStackTrace();
                         }
-                        //TODO: Handle logic for other emitters
                         //pidDataFrameMap.remove(prevPid);
                     }
                     //pidDataFrameMap.clear();
                 }
+
+                if (listOfPersistentStores.contains(pid)) {
+                    //found emitter node, so get upstream pid and persist based on emitter
+                    Set<Integer> prevPids = prevMap.get(pid);
+                    int count = 0;
+                    for (Integer prevPid : prevPids) {
+                        count++;
+                        System.out.println("count = " + count);
+                        System.out.println("currently trying to emit dataframe of prevPid = " + prevPid);
+                        DataFrame prevDataFrame = pidDataFrameMap.get(prevPid);
+
+                        GetParentProcessType getParentProcessType=new GetParentProcessType();
+                        String persistentStoreType=getParentProcessType.processTypeName(pid).replace("persistentStore_","");
+                        String persistentStoreClassName = PERSISTENTSTOREPACKAGE+persistentStoreType+"PersistentStore";
+                        try {
+                            Class persistentStoreClass = Class.forName(persistentStoreClassName);
+                            PersistentStore persistentStoreObject = (PersistentStore)persistentStoreClass.newInstance();
+                            persistentStoreObject.persist(prevDataFrame, pid, prevPid);
+                        }catch (Exception e){
+                            LOGGER.info(e);
+                            e.printStackTrace();
+                        }
+                        //pidDataFrameMap.remove(prevPid);
+                    }
+                    //pidDataFrameMap.clear();
+                }
+
+
 
                 transformAndEmit(nextPidMap.get(pid), pidDataFrameMap);
             }

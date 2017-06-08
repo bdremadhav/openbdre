@@ -1,4 +1,4 @@
-package emitters;
+package persistentstores;
 
 import com.wipro.ats.bdre.md.api.GetProperties;
 import com.wipro.ats.bdre.md.beans.GetPropertiesInfo;
@@ -12,8 +12,9 @@ import java.util.Properties;
 /**
  * Created by cloudera on 5/21/17.
  */
-public class HDFSEmitter {
+public class HDFSPersistentStore implements PersistentStore {
 
+    @Override
     public void persist(DataFrame df, Integer pid, Integer prevPid){
         String hdfsPath = new String();
         System.out.println("Inside emitter hdfs, persisting pid = " + prevPid);

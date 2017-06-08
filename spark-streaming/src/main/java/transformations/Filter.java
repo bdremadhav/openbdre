@@ -31,6 +31,11 @@ public class Filter implements Transformation {
         System.out.println("filtervalue = " + filterValue);
         colName = filterProperties.getProperty("column");
         System.out.println("colName = " + colName);
+
+        //TODO: changenow
+        check = "equals";
+        filterValue = "200";
+        colName = "responseCode";
         if(prevDataFrame!=null && !prevDataFrame.rdd().isEmpty()){
             if (check.equals("equals")) {
                 System.out.println("showing dataframe before filter ");
