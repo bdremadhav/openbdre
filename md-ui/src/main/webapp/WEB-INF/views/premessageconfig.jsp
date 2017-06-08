@@ -143,12 +143,12 @@ wizard = $(document).ready(function() {
 			if(currentIndex == 1 && priorIndex == 0) {
 				{
                     $('#rawTableColumnDetails').jtable('load');
-                     var topic_name = $('[ng-controller="myCtrl"]').scope().topicName;
-                     console.log("topic_name is "+topic_name);
+                     var connection_name = $('[ng-controller="myCtrl"]').scope().connectionName;
+                     console.log("connection_name is "+connection_name);
 					$('#createjobs').on('click', function(e) {
                          formIntoMap('fileformat_', 'fileFormat');
                          jtableIntoMap('rawtablecolumn_', 'rawTableColumnDetails');
-
+                         map["fileformat_connectionName"]=connection_name;
 						$.ajax({
 							type: "POST",
 							url: "/mdrest/message/createjobs",
@@ -565,7 +565,7 @@ wizard = $(document).ready(function() {
                     <div class="form-group" >
                     <label class="control-label col-sm-2" for="topicNameInForm">Topic Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control"  id="topicNameInForm" name="topicNameInForm" ng-model="topicName" readonly>
+                        <input type="text" class="form-control"  id="topicNameInForm" name="topicName" ng-model="topicName" readonly>
                     </div>
                 </div>
 
@@ -614,12 +614,7 @@ wizard = $(document).ready(function() {
                 </div>
 
 
-                  <div class="form-group" style="display:none;">
-                        <label class="control-label col-sm-2" for="connectionNameInform">Connection Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control"  id="connectionNameInform" name="connectionNameInform" readonly>
-                        </div>
-                    </div>
+
 
                     <div class="clearfix"></div>
                     </div>
