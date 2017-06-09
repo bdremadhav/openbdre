@@ -21,7 +21,7 @@ public class Filter implements Transformation {
         DataFrame filteredDF =null;
         GetProperties getProperties=new GetProperties();
 
-        Properties filterProperties=  getProperties.getProperties(String.valueOf(pid),"kafka");
+        Properties filterProperties=  getProperties.getProperties(String.valueOf(pid),"default");
         String check="";
         String filterValue=new String();
         String colName=new String();
@@ -32,10 +32,6 @@ public class Filter implements Transformation {
         colName = filterProperties.getProperty("column");
         System.out.println("colName = " + colName);
 
-        //TODO: changenow
-        check = "equals";
-        filterValue = "200";
-        colName = "responseCode";
         if(prevDataFrame!=null && !prevDataFrame.rdd().isEmpty()){
             if (check.equals("equals")) {
                 System.out.println("showing dataframe before filter ");

@@ -1,13 +1,25 @@
 package messageformat;
 
+import com.wipro.ats.bdre.md.api.GetProperties;
+import com.wipro.ats.bdre.md.api.StreamingMessagesAPI;
+import com.wipro.ats.bdre.md.dao.jpa.Messages;
+
+import java.util.Properties;
+
 /**
  * Created by cloudera on 5/21/17.
  */
 public class DelimitedParser implements MessageParser{
      public String[] parseRecord(String record, Integer pid) {
          System.out.println("pid inside delimited log parser = " + pid);
-         //TODO: fetch delimiter from DB props
-         String delimiter = ",";
+
+         GetProperties getProperties=new GetProperties();
+         Properties properties=  getProperties.getProperties(pid.toString(),"message");
+         String messageName = properties.getProperty("messageName");
+         StreamingMessagesAPI streamingMessagesAPI = new StreamingMessagesAPI();
+         Messages messages=streamingMessagesAPI.getMessage(messageName);
+
+         String delimiter=messages.getDelimiter();
          String[] parsedRecords = record.split(delimiter);
          return parsedRecords;
      }

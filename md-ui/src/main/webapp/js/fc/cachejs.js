@@ -1,7 +1,10 @@
 var updatePositionsFromArrangedData = function (dataRecords) {
 	$.each(dataRecords, function (i, dataRecord) {
+	console.log(dataRecord);
+
 		// console.log(dataRecord);
-		// console.log(nodePropertiesCache[i]);
+		console.log(nodePropertiesCache);
+	    console.log(nodePropertiesCache[i]);
 		if(nodePropertiesCache[i]['x']!=null && nodePropertiesCache[i]['y']!=null){
                 		nodePropertiesCache[i]['x'].value = dataRecord.xPos;
                 		nodePropertiesCache[i]['y'].value = dataRecord.yPos;

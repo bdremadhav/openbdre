@@ -132,8 +132,9 @@ public class PropertiesAPI extends MetadataAPIBase {
                 properties.setId(propertiesId);
                 if (string.equals("messageName"))
                     properties.setConfigGroup("message");
-                else
-                properties.setConfigGroup("kafka");
+                else if(string.equals("connectionName"))
+                    properties.setConfigGroup("connection");
+                properties.setConfigGroup("default");
                 properties.setProcess(process);
                 properties.setPropValue(map.get(string));
                 properties.setDescription("addition of kafka properties");

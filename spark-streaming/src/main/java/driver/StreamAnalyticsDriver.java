@@ -9,6 +9,7 @@ import com.wipro.ats.bdre.md.dao.jpa.Messages;
 import datasources.Source;
 import emitters.Emitter;
 import messageformat.MessageParser;
+import messageformat.Parser;
 import messageschema.SchemaReader;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -44,7 +45,7 @@ public class StreamAnalyticsDriver implements Serializable {
     public static final String TRANSFORMATIONSPACKAGE = "transformations.";
     public static final String EMITTERPACKAGE = "emitters.";
     public static final String PERSISTENTSTOREPACKAGE = "persistentstores.";
-    public static final String MESSAGEFORMATPACKAGE = "messageformat.";
+
     public static Map<Integer, Set<Integer>> prevMap = new HashMap<>();
     public static List<Integer> listOfSourcePids = new ArrayList<>();
     public static List<Integer> listOfTransformations = new ArrayList<>();
@@ -111,15 +112,13 @@ public class StreamAnalyticsDriver implements Serializable {
         JavaSparkContext sc = new JavaSparkContext(conf);
         Broadcast<Map<Integer,String>> broadcastVar = sc.broadcast(pidMessageTypeMap);
 
-        long batchDuration = 10000;
+        long batchDuration = 30000;
 
         GetProperties getProperties=new GetProperties();
         Properties properties=  getProperties.getProperties(parentProcessId.toString(),"batchDuration");
         //TODO get batchduration properties from parent process
         if(properties.getProperty("batchDuration") != null)
             batchDuration = Long.valueOf(properties.getProperty("batchDuration"));
-
-
 
         JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(batchDuration));
         StreamAnalyticsDriver streamAnalyticsDriver = new StreamAnalyticsDriver();
@@ -218,36 +217,7 @@ public class StreamAnalyticsDriver implements Serializable {
                                                               public Row call(String record) {
                                                                   System.out.println("Inside message handler,sourcePid = " + pid);
                                                                   Object[] attributes = new Object[]{};
-                                                                  //TODO: fetch messageType from sourcePid variable
-                                                                  String messageType="";
-                                                                  GetProperties getProperties=new GetProperties();
-                                                                  Properties properties=  getProperties.getProperties(pid.toString(),"message");
-                                                                  String messageName = properties.getProperty("messageName");
-
-                                                                  StreamingMessagesAPI streamingMessagesAPI = new StreamingMessagesAPI();
-                                                                  Messages messages=streamingMessagesAPI.getMessage(messageName);
-                                                                  messageType=messages.getFormat();
-
-
-                                                                  //String messageType = broadcastVar.value().get(pid);
-                                                                  //String messageType = pidMessageTypeMap.get(pid);
-                                                                  //String messageType = "Regex";
-
-                                                                  //TODO: Add logic to handle other message types like json, etc..
-                                                                  //TODO: changenow
-                                                                  messageType = "Regex";
-                                                                  System.out.println("messageType = " + messageType);
-                                                                  String messageClassName = MESSAGEFORMATPACKAGE+messageType+"Parser";
-                                                                  try {
-                                                                      Class sourceClass = Class.forName(messageClassName);
-                                                                      MessageParser messageObject = (MessageParser)sourceClass.newInstance();
-                                                                      attributes = messageObject.parseRecord(record,pid);
-                                                                      System.out.println("attributes = " + attributes);
-                                                                  }catch (Exception e){
-                                                                      LOGGER.info(e);
-                                                                      e.printStackTrace();
-                                                                  }
-
+                                                                  attributes = Parser.parseMessage(record,pid);
                                                                   return RowFactory.create(attributes);
                                                               }
                                                           }

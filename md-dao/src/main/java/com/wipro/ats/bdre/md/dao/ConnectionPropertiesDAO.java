@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -149,6 +150,26 @@ public class ConnectionPropertiesDAO {
         session.getTransaction().commit();
         session.close();
         return connectionProperties;
+    }
+
+    public List<ConnectionProperties> getConnectionPropertiesForConfig(String connectionName, String configGroup) {
+        List<ConnectionProperties> propertiesList = new ArrayList<ConnectionProperties>();
+        Session session = sessionFactory.openSession();
+        try {
+
+            session.beginTransaction();
+            Criteria cr = session.createCriteria(ConnectionProperties.class).add(Restrictions.eq("connections.connectionName", connectionName)).add(Restrictions.eq("configGroup", configGroup));
+            propertiesList = cr.list();
+            session.getTransaction().commit();
+
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            LOGGER.info("Error " + e);
+            return propertiesList;
+        } finally {
+            session.close();
+        }
+        return propertiesList;
     }
 
 

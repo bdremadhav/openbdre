@@ -54,6 +54,7 @@ public class ArrangePositionsTest {
     @Autowired
     PropertiesDAO propertiesDAO;
 
+    @Ignore
     @Test
     public void testGetListPositionInfo() throws Exception {
         Integer firstParentProcessId = null;
@@ -320,5 +321,16 @@ public class ArrangePositionsTest {
         }
         assertEquals(new Integer(0),flag);
         }
+
+    public void test(Integer pid){
+        ArrangePositions arrangePositions = new ArrangePositions();
+
+        Map<String, PositionsInfo> positionsInfoListarranged = arrangePositions.getListPositionInfo(47);
+
+        for (PositionsInfo pinfo : positionsInfoListarranged.values()) {
+            LOGGER.info(pinfo.getProcessId() + "-process id. " + pinfo.getxPos() + ":x-pos arranged. " + pinfo.getyPos() + ":y-pos arranged");
+
+        }
+    }
     }
 

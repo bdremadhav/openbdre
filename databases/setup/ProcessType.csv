@@ -55,8 +55,8 @@
 55,'emitter_RabbitMQ',41
 56,'emitter_Socket',41
 57,'emitter_JDBC',41
-58,'operator_persistentStore_Hive',41
-59,'operator_persistentStore_HBase',41
+58,'persistentStore_Hive',41
+59,'persistentStore_HBase',41
 60,'operator_UUID_Generator',41
 61,'operator_Validator',41
 62,'operator_Link_Resolve',41

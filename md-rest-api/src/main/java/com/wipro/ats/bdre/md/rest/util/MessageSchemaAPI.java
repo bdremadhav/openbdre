@@ -129,7 +129,7 @@ public class MessageSchemaAPI extends MetadataAPIBase {
 
             String key="";
             String configGroup="";
-            if(jpaConnections.getConnectionType().contains("kafka")){
+            if(jpaConnections.getConnectionType().contains("Kafka")){
                 key="topicName";
                 configGroup="kafka";
             }
