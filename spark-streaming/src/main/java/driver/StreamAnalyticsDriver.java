@@ -1,5 +1,6 @@
 package driver;
 
+import analytics.Analytics;
 import com.wipro.ats.bdre.GetParentProcessType;
 import com.wipro.ats.bdre.md.api.*;
 import com.wipro.ats.bdre.md.beans.ProcessInfo;
@@ -51,12 +52,14 @@ public class StreamAnalyticsDriver implements Serializable {
     public static final Logger LOGGER = Logger.getLogger(StreamAnalyticsDriver.class);
     public static final String SOURCEPACKAGE = "datasources.";
     public static final String TRANSFORMATIONSPACKAGE = "transformations.";
+    public static final String ANALYTICSPACKAGE = "analytics.";
     public static final String EMITTERPACKAGE = "emitters.";
     public static final String PERSISTENTSTOREPACKAGE = "persistentstores.";
 
     public static Map<Integer, Set<Integer>> prevMap = new HashMap<>();
     public static List<Integer> listOfSourcePids = new ArrayList<>();
     public static List<Integer> listOfTransformations = new ArrayList<>();
+    public static List<Integer> listOfAnalytics = new ArrayList<>();
     public static List<Integer> listOfEmitters = new ArrayList<>();
     public static List<Integer> listOfPersistentStores = new ArrayList<>();
     public static Map<Integer, String> nextPidMap = new HashMap<Integer, String>();
@@ -96,6 +99,9 @@ public class StreamAnalyticsDriver implements Serializable {
                 }
                 if (processTypeName.startsWith("operator")) {
                     listOfTransformations.add(processInfo.getProcessId());
+                }
+                if (processTypeName.startsWith("analytics")) {
+                    listOfAnalytics.add(processInfo.getProcessId());
                 }
                 if (processTypeName.startsWith("emitter")) {
                     listOfEmitters.add(processInfo.getProcessId());
@@ -444,6 +450,17 @@ public class StreamAnalyticsDriver implements Serializable {
                             transformedDStreamMap.put(pid, dStreamPostTransformation);
                         }
 
+                    }
+                    if(listOfAnalytics.contains(pid)){
+                        GetParentProcessType getParentProcessType = new GetParentProcessType();
+                        String analyticsType = getParentProcessType.processTypeName(pid).replace("analytics", "");
+
+                        String analyticsClassName = ANALYTICSPACKAGE + analyticsType;
+                        Class analyticsClass = Class.forName(analyticsClassName);
+                        Analytics analyticsObject = (Analytics) analyticsClass.newInstance();
+                        JavaPairDStream<String, WrapperMessage> dStreamPostAnalytics = analyticsObject.transform(emptyRDD, transformedDStreamMap, prevMap, pid, schema,broadcastMap,ssc);
+
+                        transformedDStreamMap.put(pid, dStreamPostAnalytics);
                     }
                     if (listOfEmitters.contains(pid)) {
                         //found emitter node, so get upstream pid and persist based on emitter
