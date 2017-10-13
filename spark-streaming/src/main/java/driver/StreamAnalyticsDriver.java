@@ -453,7 +453,7 @@ public class StreamAnalyticsDriver implements Serializable {
                     }
                     if(listOfAnalytics.contains(pid)){
                         GetParentProcessType getParentProcessType = new GetParentProcessType();
-                        String analyticsType = getParentProcessType.processTypeName(pid).replace("analytics", "");
+                        String analyticsType = getParentProcessType.processTypeName(pid).replace("analytics_", "");
 
                         String analyticsClassName = ANALYTICSPACKAGE + analyticsType;
                         Class analyticsClass = Class.forName(analyticsClassName);

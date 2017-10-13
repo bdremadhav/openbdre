@@ -5,9 +5,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.broadcast.Broadcast;
-import org.apache.spark.ml.Pipeline;
-import org.apache.spark.ml.classification.LogisticRegression;
 import org.apache.spark.ml.classification.LogisticRegressionModel;
+import org.apache.spark.ml.feature.IndexToString;
 import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.StringIndexerModel;
 import org.apache.spark.ml.feature.VectorAssembler;
@@ -16,6 +15,7 @@ import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.DoubleType;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
@@ -25,9 +25,9 @@ import util.WrapperMessage;
 import java.util.*;
 
 /**
- * Created by cloudera on 10/11/17.
+ * Created by cloudera on 10/12/17.
  */
-public class LinearRegression implements Analytics {
+public class LogisticRegression implements Analytics {
     @Override
     public JavaPairDStream<String, WrapperMessage> transform(JavaRDD emptyRDD, Map<Integer, JavaPairDStream<String, WrapperMessage>> prevDStreamMap, Map<Integer, Set<Integer>> prevMap, Integer pid, StructType schema, Map<String, Broadcast<HashMap<String, String>>> broadcastMap, JavaStreamingContext jssc) {
         List<Integer> prevPidList = new ArrayList<>();
@@ -98,16 +98,16 @@ public class LinearRegression implements Analytics {
                         newLabelDF = labelIndexer.transform(assembyDF);
                     }
                     newLabelDF.show(10);
-                    org.apache.spark.ml.regression.LinearRegression lr = new org.apache.spark.ml.regression.LinearRegression().setMaxIter(maxIter).setRegParam(regParam).setElasticNetParam(elasticNetParam).setLabelCol(finalLabelColumn).setFeaturesCol("features");
+                    org.apache.spark.ml.classification.LogisticRegression lr = new org.apache.spark.ml.classification.LogisticRegression().setMaxIter(maxIter).setRegParam(regParam).setElasticNetParam(elasticNetParam).setLabelCol(finalLabelColumn).setFeaturesCol("features");
 
                     if(check.equalsIgnoreCase("training")) {
-                        LinearRegressionModel lrModel = null;
+                        LogisticRegressionModel lrModel = null;
                         lrModel = lr.fit(newLabelDF);
                         lrModel.write().overwrite().save("/tmp/"+modelName);
                         System.out.println("lrModel.coefficients() = " + lrModel.coefficients());
                     }
                     else {
-                        LinearRegressionModel predictionLRModel = LinearRegressionModel.load("/tmp/"+modelName);
+                        LogisticRegressionModel predictionLRModel = LogisticRegressionModel.load("/tmp/"+modelName);
                         outputDF = predictionLRModel.transform(newLabelDF);
                         outputDF.show();
                     }
