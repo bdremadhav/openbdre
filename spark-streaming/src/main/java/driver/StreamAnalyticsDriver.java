@@ -120,7 +120,7 @@ public class StreamAnalyticsDriver implements Serializable {
             }
             // Create a Spark Context.
             //TODO get appname properties from parent process
-            SparkConf conf = new SparkConf().setAppName("Log Analyzer");
+            SparkConf conf = new SparkConf().setAppName("BDRE-"+parentProcessId);
             JavaSparkContext sc = new JavaSparkContext(conf);
             JavaRDD emptyRDD = sc.emptyRDD();
             //Broadcast<Map<Integer, String>> broadcastVar = sc.broadcast(pidMessageTypeMap);

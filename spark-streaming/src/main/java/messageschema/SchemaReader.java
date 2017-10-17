@@ -27,7 +27,7 @@ public class SchemaReader {
     //String schemaString = "ipAddress clientIdentd userID dateTimeString method endpoint protocol responseCode contentSize";
     public static final Map<String,DataType> dataTypesMap = new SGDataTypes().dataTypesMap;
 
-    public StructType generateSchema(int pid) throws Exception{
+    public StructType generateSchema(int pid) throws Exception {
         try {
             GetProcess getProcess = new GetProcess();
             ProcessInfo processInfo = getProcess.getProcess(pid);
@@ -35,10 +35,19 @@ public class SchemaReader {
 
             Properties properties = getProperties.getProperties(processInfo.getProcessId().toString(), "message");
             String messageName = properties.getProperty("messageName");
-            StreamingMessagesAPI streamingMessagesAPI = new StreamingMessagesAPI();
-            Messages messages = streamingMessagesAPI.getMessage(messageName);
-            String format = messages.getFormat();
-            String schemaString = messages.getMessageSchema();
+            return generateSchemaFromMessage(messageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("e = " + e);
+            throw e;
+        }
+    }
+
+    public StructType generateSchemaFromMessage(String messageName){
+        StreamingMessagesAPI streamingMessagesAPI = new StreamingMessagesAPI();
+        Messages messages = streamingMessagesAPI.getMessage(messageName);
+        String format = messages.getFormat();
+        String schemaString = messages.getMessageSchema();
             //Generate the schema based on the string of schema
 
             System.out.println("schemaString = " + schemaString);
@@ -67,10 +76,6 @@ public class SchemaReader {
             columnDataTypeMap.clear();
 
             return schema;
-        }catch (Exception e){
-            e.printStackTrace();
-            System.out.println("e = " + e);
-            throw e;
-        }
+
     }
 }
